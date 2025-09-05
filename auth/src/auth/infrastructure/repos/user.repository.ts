@@ -35,7 +35,7 @@ export class UserRepositoryClickhouse implements IUserRepository {
     return user as never;
   }
 
-  async create(user: User): Promise<User | null> {
+  async create(user: User): Promise<(User & { id: number }) | null> {
     const connection = this.clickhouseService.getConnectionDetails();
 
     await connection.insert({

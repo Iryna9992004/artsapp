@@ -1,13 +1,14 @@
-import { Body, Controller, Post } from '@nestjs/common';
+import { Controller, Post, Req } from '@nestjs/common';
 import { RegisterUsecase } from '../application/register.usecase';
-import { UserDto } from './dto/user.dto';
+import { Request } from 'express';
 
 @Controller('auth')
 export class AuthController {
   constructor(private readonly registerUsecase: RegisterUsecase) {}
 
   @Post('register')
-  async register(@Body() dto: UserDto) {
-    return this.registerUsecase.exec(dto);
+  async register(@Req() request: Request) {
+    const userAgent = request.headers['user-agent'];
+    return this.registerUsecase.exec(userAgent, request.body);
   }
 }
