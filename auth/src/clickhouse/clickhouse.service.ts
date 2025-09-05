@@ -5,6 +5,12 @@ import { createClient } from '@clickhouse/client';
 @Injectable()
 export class ClickhouseService {
   getConnectionDetails() {
+    console.log(
+      config.clickhouse.host,
+      config.clickhouse.username,
+      config.clickhouse.password,
+      config.clickhouse.db,
+    );
     const client = createClient({
       host: config.clickhouse.host,
       username: config.clickhouse.username,

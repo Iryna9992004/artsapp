@@ -10,18 +10,25 @@ export class UserRepositoryClickhouse implements IUserRepository {
   async findByEmail(email: string): Promise<User | null> {
     const connection = this.clickhouseService.getConnectionDetails();
     const rows = await connection.query({
-      query: `SELECT * from users WHERE email=${email}`,
+      query: `SELECT * from users WHERE email = {email:String}`,
+      query_params: { email },
       format: 'JSON',
     });
 
-    const user = await rows.json();
-    return user as never;
+    const result = await rows.json();
+
+    if (result.data && result.data.length > 0) {
+      return result.data[0] as User;
+    }
+
+    return null;
   }
 
   async findById(id: number): Promise<User | null> {
     const connection = this.clickhouseService.getConnectionDetails();
     const raws = await connection.query({
-      query: `SELECT * FROM users WHERE id=${id}`,
+      query: `SELECT * FROM users WHERE id = {id: number}`,
+      query_params: { id },
       format: 'JSON',
     });
     const user = await raws.json();
@@ -38,7 +45,8 @@ export class UserRepositoryClickhouse implements IUserRepository {
     });
 
     const resultSet = await connection.query({
-      query: `SELECT * FROM users WHERE email=${user.email}`,
+      query: `SELECT * FROM users WHERE email = {email:String}`,
+      query_params: { email: user.email },
       format: 'JSONEachRow',
     });
 

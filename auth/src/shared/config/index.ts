@@ -1,4 +1,5 @@
-import 'dotenv';
+import * as dotenv from 'dotenv';
+dotenv.config();
 
 interface Config {
   clickhouse: {
