@@ -1,17 +1,8 @@
 import { Module } from '@nestjs/common';
-import { ClickHouseModule } from '@depyronick/nestjs-clickhouse';
+import { AuthController } from './auth/interface/auth.controller';
 
 @Module({
-  imports: [
-    ClickHouseModule.register([
-      {
-        name: 'clickhouse-server',
-        host: 'localhost',
-        password: 'dvsdssvdvsd',
-      },
-    ]),
-  ],
-  controllers: [],
+  controllers: [AuthController],
   providers: [],
 })
 export class AppModule {}
