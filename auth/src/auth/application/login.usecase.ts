@@ -32,10 +32,12 @@ export class LoginUsecase {
     const accessToken = jwt.sign(
       { id, full_name, email },
       config.jwt.access_secret,
+      { expiresIn: '15min' },
     );
     const refreshToken = jwt.sign(
       { id, full_name, email },
-      config.jwt.access_secret,
+      config.jwt.refresh_secret,
+      { expiresIn: '2h' },
     );
 
     await this.redisService.setValue(userAgent, refreshToken);
