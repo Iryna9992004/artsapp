@@ -19,10 +19,16 @@ export class RefreshUsecase {
       throw new UnauthorizedException('Session expired');
     }
 
-    const accessToken = jwt.sign({ ...decodedToken }, config.jwt.access_secret);
-    const refreshToken = jwt.sign(
-      { ...decodedToken },
+    const { id, full_name, email } = decodedToken;
+    const accessToken = jwt.sign(
+      { id, full_name, email },
       config.jwt.access_secret,
+      { expiresIn: '15m' },
+    );
+    const refreshToken = jwt.sign(
+      { ...id, full_name, email },
+      config.jwt.refresh_secret,
+      { expiresIn: '2h' },
     );
 
     await this.redisService.setValue(ip, refreshToken);

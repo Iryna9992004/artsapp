@@ -31,7 +31,7 @@ export class RegisterUsecase {
     const accessToken = jwt.sign(
       { id, full_name, email },
       config.jwt.access_secret,
-      { expiresIn: '15min' },
+      { expiresIn: '15m' },
     );
     const refreshToken = jwt.sign(
       { id, full_name, email },
@@ -41,6 +41,6 @@ export class RegisterUsecase {
 
     await this.redisService.setValue(userAgent, refreshToken);
 
-    return { accessToken };
+    return { accessToken, user: foundUser };
   }
 }

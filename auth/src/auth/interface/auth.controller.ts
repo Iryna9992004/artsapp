@@ -1,6 +1,6 @@
-import { Controller, Get, Post, Req } from '@nestjs/common';
+import { Controller, Get, Post, Req, Res } from '@nestjs/common';
 import { RegisterUsecase } from '../application/register.usecase';
-import { Request } from 'express';
+import { Request, Response } from 'express';
 import { LoginUsecase } from '../application/login.usecase';
 import { RefreshUsecase } from '../application/refresh.usecase';
 import { LogoutUsecase } from '../application/logout.usecase';
@@ -15,26 +15,57 @@ export class AuthController {
   ) {}
 
   @Post('register')
-  async register(@Req() request: Request) {
-    const ip = request.connection.remoteAddress;
-    return this.registerUsecase.exec(ip, request.body);
+  async register(@Req() request: Request, @Res() response: Response) {
+    const userAgent = request.headers['user-agent'];
+    const res = await this.registerUsecase.exec(userAgent, request.body);
+    if (res) {
+      response.cookie('accessToken', res.accessToken, {
+        sameSite: false,
+        secure: true,
+        maxAge: 15 * 60 * 1000,
+      });
+      response.cookie('userAgentSession', userAgent, {
+        maxAge: 120 * 60 * 1000,
+        secure: true,
+        sameSite: false,
+      });
+    }
+
+    return { ...res.user };
   }
 
   @Post('login')
-  async login(@Req() request: Request) {
-    const ip = request.connection.remoteAddress;
-    return this.loginUsecase.exec(ip, request.body);
+  async login(@Req() request: Request, @Res() response: Response) {
+    const userAgent = request.headers['user-agent'];
+    const res = await this.loginUsecase.exec(`${userAgent}`, request.body);
+    if (res) {
+      response.cookie('accessToken', res.accessToken, {
+        sameSite: false,
+        secure: true,
+        maxAge: 15 * 60 * 1000,
+      });
+      response.cookie('userAgentSession', userAgent, {
+        maxAge: 120 * 60 * 1000,
+        secure: true,
+        sameSite: false,
+      });
+    }
+
+    return response.json({ ...res.user });
   }
 
   @Get('/refresh')
   async refresh(@Req() request: Request) {
-    const ip = request.connection.remoteAddress;
-    return this.refreshUsecase.execute(ip);
+    const userAgent = request.cookies['userAgentSession'];
+    return this.refreshUsecase.execute(userAgent);
   }
 
   @Get('/logout')
-  async logout(@Req() request: Request) {
-    const ip = request.connection.remoteAddress;
-    return this.logoutUsecase.execute(ip);
+  async logout(@Req() request: Request, @Res() response: Response) {
+    const userAgent = request.cookies['userAgentSession'];
+    response.clearCookie('accessToken');
+    response.clearCookie('userAgentSession');
+    const res = await this.logoutUsecase.execute(userAgent);
+    return response.json(res);
   }
 }
