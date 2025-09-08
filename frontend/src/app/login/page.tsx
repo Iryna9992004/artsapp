@@ -1,4 +1,10 @@
 import LoginForm from "@/components/features/login-form/LoginForm";
+import { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "Login",
+  description: "Login to ArtsApp",
+};
 
 export default function Login() {
   return (

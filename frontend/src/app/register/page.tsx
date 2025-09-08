@@ -1,4 +1,10 @@
 import RegisterForm from "@/components/features/register-form";
+import { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "Register",
+  description: "Register to ArtsApp",
+};
 
 export default function Register() {
   return (
