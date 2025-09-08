@@ -1,5 +1,5 @@
 CREATE TABLE IF NOT EXISTS users (
-    id UInt64,
+    id UUID DEFAULT generateUUIDv4(),
     full_name String,
     email String,
     pass String,
