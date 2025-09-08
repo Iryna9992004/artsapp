@@ -1,16 +1,27 @@
 "use client";
 import React, { useState } from "react";
 import { MessageSquare } from "react-feather";
-import { ChatMessageProps } from "../chat-message/types";
 import FeedReply from "../feed-reply";
+import { colors } from "./colors";
+import { FeedMessageProps } from "./types";
 
-const FeedMessage: React.FC<ChatMessageProps> = ({
+const FeedMessage: React.FC<FeedMessageProps> = ({
   text,
   timestamp,
   isMine,
   messagesCount = 0,
+  colorNumber = "1",
 }) => {
   const [repliesOpened, setRepliesOpened] = useState(false);
+
+  const getColorConfig = (colorNum: string | number) => {
+    const key = String(colorNum) as unknown;
+    return (
+      colors[
+        key as "1" | "2" | "3" | "4" | "5" | "6" | "7" | "8" | "9" | "10"
+      ]
+    );
+  };
 
   return (
     <div className={`w-full flex ${isMine ? "justify-end" : "justify-start"}`}>
@@ -19,8 +30,10 @@ const FeedMessage: React.FC<ChatMessageProps> = ({
         onClick={() => setRepliesOpened(!repliesOpened)}
       >
         <div className="w-full">
-          <div className="bg-gradient-to-r from-[#242BB7] to-[#734AD7] shadow-lg shadow-[#734AD7]/30 text-white rounded-2xl p-[1px] relative">
-            <div className="bg-gradient-to-r from-[#1320AA] to-[#5B31AF] text-white rounded-2xl px-4 py-3 relative">
+          <div
+            className={`${getColorConfig(colorNumber).border} text-white rounded-2xl p-[1px] relative`}
+          >
+            <div className={`${getColorConfig(colorNumber).bg} text-white rounded-2xl px-4 py-3 relative`}>
               <p className="text-md leading-relaxed">{text}</p>
               <div className="flex items-center justify-between mt-1 space-x-2">
                 <span className="text-xs text-gray-200">{timestamp}</span>
@@ -44,9 +57,9 @@ const FeedMessage: React.FC<ChatMessageProps> = ({
         </div>
 
         {isMine ? (
-          <div className="absolute right-[9px] -bottom-[4px] w-0 h-0 border-l-[9px] border-l-transparent border-r-[9px] border-r-transparent border-b-[12px] border-b-[#7E42FF] transform -rotate-226" />
+          <div className={`absolute right-[9px] -bottom-[4px] w-0 h-0 border-l-[9px] border-l-transparent border-r-[9px] border-r-transparent border-b-[12px] ${getColorConfig(colorNumber).rightCorner} transform -rotate-226`} />
         ) : (
-          <div className="absolute left-[9px] -bottom-[4px] w-0 h-0 border-l-[9px] border-l-transparent border-r-[9px] border-r-transparent border-b-[12px] border-b-[#1E25B1] transform rotate-226" />
+          <div className={`absolute left-[9px] -bottom-[4px] w-0 h-0 border-l-[9px] border-l-transparent border-r-[9px] border-r-transparent border-b-[12px] ${getColorConfig(colorNumber).leftCorner} transform rotate-226`} />
         )}
       </div>
     </div>

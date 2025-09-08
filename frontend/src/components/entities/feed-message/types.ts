@@ -3,4 +3,5 @@ export interface FeedMessageProps {
   timestamp: string;
   isMine: boolean;
   messagesCount?: number;
+  colorNumber: string;
 }
