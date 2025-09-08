@@ -13,7 +13,7 @@ export default function RootLayout({
 }>) {
   const linearGradient = {
     background:
-      "linear-gradient(135deg, #3b0a77 0%, #330865 30%, #1e0640 60%, #0f0e2f 85%, #000000 100%)",
+      "linear-gradient(135deg, #2a064e 0%, #1a0433 25%, #0f0e2f 45%, #000000 80%, #000000 100%)",
   };
 
   return (

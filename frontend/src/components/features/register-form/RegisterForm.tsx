@@ -1,4 +1,5 @@
 "use client";
+import Button from "@/components/ui/button/Button";
 import Input from "@/components/ui/input/Input";
 import React, { useState } from "react";
 
@@ -8,7 +9,7 @@ export default function RegisterForm() {
   const [password, setPassword] = useState("");
 
   return (
-    <form className="flex flex-col gap-2 min-w-80">
+    <form className="flex flex-col gap-2 min-w-80 max-w-full">
       <Input
         placeholder="Write you full name"
         value={full_name}
@@ -21,6 +22,8 @@ export default function RegisterForm() {
         setValue={setPassword}
         type="password"
       />
+      <Button text="Register" />
+      <Button text="Login" variant="secondary" />
     </form>
   );
 }
