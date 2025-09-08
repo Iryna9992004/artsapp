@@ -23,7 +23,6 @@ export default function RegisterForm() {
         type="password"
       />
       <Button text="Register" />
-      <Button text="Login" variant="secondary" />
     </form>
   );
 }

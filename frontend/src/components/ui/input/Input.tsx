@@ -30,9 +30,9 @@ export default function Input({
           className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-300 hover:text-white focus:outline-none"
         >
           {showPassword ? (
-            <EyeOff className="text-gray-300 w-5" />
-          ) : (
             <Eye className="text-gray-300 w-5" />
+          ) : (
+            <EyeOff className="text-gray-300 w-5" />
           )}
         </button>
       )}
