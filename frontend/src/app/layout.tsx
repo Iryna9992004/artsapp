@@ -11,16 +11,11 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const linearGradient = {
-    background:
-      "linear-gradient(135deg, #2a064e 0%, #1a0433 25%, #0f0e2f 45%, #000000 80%, #000000 100%)",
-  };
-
   return (
     <html lang="en">
-      <body style={linearGradient}>
+    <body className="bg-gradient-to-bl from-[#1e0033] to-[#4a0057]">
         <div className="relative flex h-[100vh] w-full">
-          <div className="absolute inset-0 bg-[url(/stars.gif)] bg-cover bg-center opacity-20"></div>
+          <div className="absolute inset-0 bg-[url(/stars.gif)] bg-cover bg-center opacity-50"></div>
           <div className="relative z-10 flex h-full w-full">{children}</div>
         </div>
       </body>
