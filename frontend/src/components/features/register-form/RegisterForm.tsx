@@ -9,19 +9,26 @@ export default function RegisterForm() {
   const [password, setPassword] = useState("");
 
   return (
-    <form className="flex flex-col gap-2 min-w-80 max-w-full">
-      <Input
-        placeholder="Write you full name"
-        value={full_name}
-        setValue={setFullName}
-      />
-      <Input placeholder="Write your email" value={email} setValue={setEmail} />
-      <Input
-        placeholder="Write your password"
-        value={password}
-        setValue={setPassword}
-        type="password"
-      />
+    <form className="flex flex-col gap-6 min-w-80 max-w-full">
+      <div className="flex flex-col gap-2">
+        <Input
+          placeholder="Write you full name"
+          value={full_name}
+          setValue={setFullName}
+        />
+        <Input
+          placeholder="Write your email"
+          value={email}
+          setValue={setEmail}
+        />
+        <Input
+          placeholder="Write your password"
+          value={password}
+          setValue={setPassword}
+          type="password"
+        />
+      </div>
+
       <Button text="Register" />
     </form>
   );

@@ -18,8 +18,11 @@ export default function RootLayout({
 
   return (
     <html lang="en">
-      <body style={linearGradient} className="flex h-[100vh] w-full">
-        {children}
+      <body style={linearGradient}>
+        <div className="relative flex h-[100vh] w-full">
+          <div className="absolute inset-0 bg-[url(/stars.gif)] bg-cover bg-center opacity-20"></div>
+          <div className="relative z-10 flex h-full w-full">{children}</div>
+        </div>
       </body>
     </html>
   );
