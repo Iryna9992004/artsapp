@@ -1,6 +1,7 @@
 import React from "react";
 import { MessageSquare } from "react-feather";
 import { ChatMessageProps } from "../chat-message/types";
+import FeedReply from "../feed-reply";
 
 const FeedMessage: React.FC<ChatMessageProps> = ({
   text,
@@ -24,6 +25,11 @@ const FeedMessage: React.FC<ChatMessageProps> = ({
                     <MessageSquare className="w-4" />
                   </div>
                 </div>
+              </div>
+
+              <div className="flex flex-col gap-1 w-full pt-2">
+                <FeedReply />
+                <FeedReply />
               </div>
             </div>
           </div>
