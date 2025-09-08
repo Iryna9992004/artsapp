@@ -13,9 +13,9 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-    <body className="bg-gradient-to-bl from-[#1e0033] to-[#4a0057]">
+      <body className="bg-gradient-to-bl from-blue-950 to-orange-950 h-[100vh] w-full">
         <div className="relative flex h-[100vh] w-full">
-          <div className="absolute inset-0 bg-[url(/stars.gif)] bg-cover bg-center opacity-50"></div>
+          <div className="absolute inset-0 bg-[url(/stars.gif)] bg-cover bg-center opacity-80" />
           <div className="relative z-10 flex h-full w-full">{children}</div>
         </div>
       </body>
