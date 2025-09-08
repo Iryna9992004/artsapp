@@ -1,7 +1,14 @@
+import FeedMessage from "@/components/entities/feed-message";
+
 export default function Feed() {
   return (
-    <div>
-      <h1>Feed</h1>
+    <div className="p-3">
+      <FeedMessage
+        text="Text placeholder here"
+        timestamp="5 mins ago"
+        status="read"
+        readCount={3}
+      />
     </div>
   );
 }
