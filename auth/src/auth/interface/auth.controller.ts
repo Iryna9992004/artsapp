@@ -31,7 +31,7 @@ export class AuthController {
       });
     }
 
-    return { ...res.user };
+    return response.json({ ...res.user });
   }
 
   @Post('login')

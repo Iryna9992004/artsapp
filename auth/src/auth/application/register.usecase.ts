@@ -41,6 +41,6 @@ export class RegisterUsecase {
 
     await this.redisService.setValue(userAgent, refreshToken);
 
-    return { accessToken, user: foundUser };
+    return { accessToken, user: createdUser };
   }
 }
