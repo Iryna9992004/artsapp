@@ -1,9 +1,10 @@
 "use client";
 import React from "react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
-import { ChevronLeft } from "react-feather";
+import { ChevronLeft, Plus } from "react-feather";
 
 import { pathnames } from "./pathnames";
+import Link from "next/link";
 
 export default function Navbar() {
   const pathname = usePathname();
@@ -21,6 +22,12 @@ export default function Navbar() {
       <h1 className="text-white font-bold text-2xl">
         {pathnames[pathname as never] || searchParams.get("message")}
       </h1>
+
+      <Link href="/posts/create">
+        <div className="transform rotate-45 rounded-sm bg-pink-800 border border-white/60 p-1 ml-auto cursor-pointer hover:bg-pink-900">
+          <Plus className="text-white transform rotate-45" />
+        </div>
+      </Link>
     </div>
   );
 }
