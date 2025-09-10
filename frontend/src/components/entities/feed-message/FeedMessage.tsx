@@ -24,7 +24,7 @@ const FeedMessage: React.FC<FeedMessageProps> = ({
   return (
     <div className={`w-full flex ${isMine ? "justify-end" : "justify-start"}`}>
       <div
-        className="relative flex justify-end mb-4 px-4 min-w-[80px] w-[30%] max-w-[45%] cursor-pointer"
+        className="relative flex justify-end mb-4 px-4 min-w-80 w-[30%] max-w-[45%] cursor-pointer"
         onClick={() => setRepliesOpened(!repliesOpened)}
       >
         <div className="w-full">
