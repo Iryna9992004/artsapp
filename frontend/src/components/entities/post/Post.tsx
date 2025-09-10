@@ -3,7 +3,7 @@ import { Music } from "react-feather";
 
 export default function Post() {
   return (
-    <div className="flex flex-col lg:flex-row items-start gap-4 p-4 bg-blue-800/40 rounded-2xl">
+    <div className="flex flex-col lg:flex-row items-start gap-4 p-4 bg-blue-800/40 hover:bg-blue-900/40 transition duration-150 rounded-2xl cursor-pointer">
       <div className="h-50 w-200 max-w-full bg-blue-500 rounded-xl" />
       <div>
         <div className="flex flex-col gap-4 h-full">
