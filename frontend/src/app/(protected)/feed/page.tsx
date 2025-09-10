@@ -2,7 +2,7 @@ import FeedMessage from "../../../components/entities/feed-message";
 
 export default function Feed() {
   return (
-    <div className="p-3 w-200 max-w-full bg-black/50">
+    <div className="p-3">
       <FeedMessage
         text="Text placeholder here"
         timestamp="5 mins ago"

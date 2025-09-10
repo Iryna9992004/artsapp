@@ -1,3 +1,4 @@
+import Navbar from "@/components/widgets/navbar";
 import Tabbar from "@/components/widgets/tabbar";
 import React from "react";
 
@@ -8,8 +9,11 @@ export default function ProtectedLayout({
 }>) {
   return (
     <div className="w-full h-full bg-opacity-20 overflow-y-auto flex justify-center">
-      {children}
-      <Tabbar />
+      <div className="w-200 max-w-full bg-black/50">
+        <Navbar />
+        {children}
+        <Tabbar />
+      </div>
     </div>
   );
 }

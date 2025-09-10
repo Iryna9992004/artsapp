@@ -4,6 +4,7 @@ import { MessageSquare } from "react-feather";
 import FeedReply from "../feed-reply";
 import { colors } from "./colors";
 import { FeedMessageProps } from "./types";
+import { useRouter } from "next/navigation";
 
 const FeedMessage: React.FC<FeedMessageProps> = ({
   text,
@@ -13,12 +14,19 @@ const FeedMessage: React.FC<FeedMessageProps> = ({
   colorNumber = "1",
 }) => {
   const [repliesOpened, setRepliesOpened] = useState(false);
+  const router = useRouter();
 
   const getColorConfig = (colorNum: string | number) => {
     const key = String(colorNum) as unknown;
     return colors[
       key as "1" | "2" | "3" | "4" | "5" | "6" | "7" | "8" | "9" | "10"
     ];
+  };
+
+  const pushToChat = (e: Event) => {
+    e.preventDefault();
+    e.stopPropagation();
+    router.push(`/feed/1?message=${encodeURIComponent(text)}`);
   };
 
   return (
@@ -34,7 +42,12 @@ const FeedMessage: React.FC<FeedMessageProps> = ({
             <div
               className={`${getColorConfig(colorNumber).bg} text-white rounded-2xl px-4 py-3 relative`}
             >
-              <p className="text-md leading-relaxed">{text}</p>
+              <a
+                className="text-md leading-relaxed cursor-pointer"
+                onClick={pushToChat as never}
+              >
+                {text}
+              </a>
               <div className="flex items-center justify-between mt-1 space-x-2">
                 <span className="text-xs text-gray-200">{timestamp}</span>
 
@@ -48,8 +61,8 @@ const FeedMessage: React.FC<FeedMessageProps> = ({
 
               {repliesOpened ? (
                 <div className="flex flex-col gap-1 w-full pt-2">
-                  <FeedReply />
-                  <FeedReply />
+                  <FeedReply onClick={pushToChat} />
+                  <FeedReply onClick={pushToChat} />
                 </div>
               ) : null}
             </div>
