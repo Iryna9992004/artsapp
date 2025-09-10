@@ -1,9 +1,10 @@
 import ChatMessage from "@/components/entities/chat-message/ChatMessage";
+import SendForm from "@/components/features/send-form";
 import React from "react";
 
 export default function Page() {
   return (
-    <div className="p-2">
+    <div className="p-2 max-h-[90vh] overflow-y-auto pb-20">
       <ChatMessage
         text="Text placeholder here"
         timestamp="3 mins ago"
@@ -74,6 +75,8 @@ export default function Page() {
         isMine={false}
         colorNumber="10"
       />
+
+      <SendForm />
     </div>
   );
 }
