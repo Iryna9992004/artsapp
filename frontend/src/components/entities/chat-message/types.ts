@@ -3,6 +3,5 @@ export interface ChatMessageProps {
   timestamp: string;
   status: "sent" | "delivered" | "read";
   isMine: boolean;
-  messagesCount: number;
-  colorNumber: number;
+  colorNumber: string;
 }
