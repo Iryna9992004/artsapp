@@ -44,7 +44,7 @@ export default function Navbar() {
       <div className="flex items-center gap-2">
         {showNavbar ? (
           <ChevronLeft
-            className="text-white cursor-pointer"
+            className="text-white cursor-pointer w-8"
             onClick={() => router.back()}
           />
         ) : null}
