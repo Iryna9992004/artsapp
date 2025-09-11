@@ -1,3 +1,4 @@
+'use client'
 import React from "react";
 
 export default function SearchInput() {
@@ -10,6 +11,8 @@ export default function SearchInput() {
       />
       <button
         type="submit"
+        area-label = "search"
+        name="search"
         className="flex items-center justify-center bg-[#007bff] px-5 cursor-pointer hover:bg-blue-700 transition duration-150"
       >
         <svg

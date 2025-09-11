@@ -18,6 +18,7 @@ export default function Input({
         type={
           isPassword ? (showPassword ? "text" : "password") : (type ?? "text")
         }
+        name={placeholder}
         placeholder={placeholder}
         className="bg-[#2F2F2F] border border-gray-600 px-5 py-3 placeholder-gray-300 rounded-full outline-none w-full caret-white focus:border-white text-white pr-14"
         value={value}
@@ -26,6 +27,8 @@ export default function Input({
       {isPassword && (
         <button
           type="button"
+          area-label="password-switch"
+          name="password-switch"
           onClick={() => setShowPassword((prev) => !prev)}
           className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-300 hover:text-white focus:outline-none cursor-pointer"
         >

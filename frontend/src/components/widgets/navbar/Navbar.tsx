@@ -54,7 +54,7 @@ export default function Navbar() {
       </div>
 
       {!isCreatePage ? (
-        <button onClick={() => handleCreate()}>
+        <button onClick={() => handleCreate()} name="plus" area-label="plus">
           <div className="transform rotate-45 rounded-sm bg-pink-800 border border-white/60 p-1 cursor-pointer hover:bg-pink-900">
             <Plus className="text-white transform rotate-45" />
           </div>

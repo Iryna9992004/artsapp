@@ -5,6 +5,7 @@ import { FeedReplyProps } from "./types";
 export default function FeedReply({ onClick }: FeedReplyProps) {
   return (
     <button
+      name="feed-reply"
       className="bg-black/50 p-4 flex flex-col rounded-lg cursor-pointer"
       onClick={onClick as never}
     >

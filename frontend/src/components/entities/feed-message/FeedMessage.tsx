@@ -42,12 +42,12 @@ const FeedMessage: React.FC<FeedMessageProps> = ({
             <div
               className={`${getColorConfig(colorNumber).bg} text-white rounded-2xl px-4 py-3 relative`}
             >
-              <a
+              <div
                 className="text-md leading-relaxed cursor-pointer"
                 onClick={pushToChat as never}
               >
                 {text}
-              </a>
+              </div>
               <div className="flex items-center justify-between mt-1 space-x-2">
                 <span className="text-xs text-gray-200">{timestamp}</span>
 

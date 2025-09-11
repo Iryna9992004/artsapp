@@ -20,6 +20,8 @@ export default function Button({
   return (
     <button
       disabled={disabled}
+      aria-label={text}
+      name={text}
       type={type as never}
       className={`${baseClasses} ${variant === "primary" ? primaryClasses : secondaryClasses}`}
       onClick={onClick}
