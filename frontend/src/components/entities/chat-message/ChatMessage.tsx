@@ -78,7 +78,7 @@ const ChatMessage: React.FC<ChatMessageProps> = ({
 
   return (
     <div className={`w-full flex ${isMine ? "justify-end" : "justify-start"}`}>
-      <div className="relative flex justify-end mb-4 px-4 min-w-[80px] max-w-[35%]">
+      <div className="relative flex justify-end mb-4 px-4 min-w-[80px] max-w-100">
         <div className="w-full">
           <div
             className={`${getColorConfig(colorNumber).border} text-white rounded-2xl p-[1px] relative`}
