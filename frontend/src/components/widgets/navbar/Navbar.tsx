@@ -12,9 +12,9 @@ export default function Navbar() {
   const router = useRouter();
 
   const handleCreate = () => {
-    if (pathname === "/feed") router.push("/feed/create");
-    if (pathname === "/posts") router.push("/posts/create");
-    if (pathname === "/events") router.push("/feed/events");
+    if (pathname.includes("/feed")) router.push("/feed/create");
+    if (pathname.includes("/posts")) router.push("/posts/create");
+    if (pathname.includes("/events")) router.push("/feed/events");
   };
 
   const showNavbar = useMemo(() => {
@@ -49,7 +49,7 @@ export default function Navbar() {
           />
         ) : null}
         <h1 className="text-white font-bold text-2xl">
-          {pathnames[pathname as never] || searchParams.get("message")}
+          {pathnames[pathname as never] || searchParams.get("title")}
         </h1>
       </div>
 
