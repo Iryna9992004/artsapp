@@ -28,11 +28,11 @@ export default function Tabbar() {
 
   return (
     <div className="w-full fixed bottom-0 left-0 right-0 flex items-center justify-center pb-2 px-4">
-      <div className="max-w-full w-fit flex justify-center gap-2 bg-gray-950/80 rounded-2xl border border-white/30 p-2">
+      <div className="max-w-full w-fit grid grid-cols-3 justify-center gap-2 bg-gray-950/80 rounded-2xl border border-white/30 p-2">
         {tabs.map((item) => (
           <Link href={item.path} key={item.path}>
             <div
-              className={`flex flex-col w-30 gap-1 items-center justify-center py-4 px-6 rounded-lg text-md text-white cursor-pointer
+              className={`flex flex-col w-30 max-w-full gap-1 items-center justify-center py-4 px-6 rounded-lg text-md text-white cursor-pointer
                 hover:bg-linear-to-t hover:from-purple-900 transition duration-700 ease-in-out
                 ${pathname === item.path ? "bg-linear-to-t from-purple-900" : ""}`}
             >
