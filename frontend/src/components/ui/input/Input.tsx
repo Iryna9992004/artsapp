@@ -27,7 +27,7 @@ export default function Input({
         <button
           type="button"
           onClick={() => setShowPassword((prev) => !prev)}
-          className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-300 hover:text-white focus:outline-none"
+          className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-300 hover:text-white focus:outline-none cursor-pointer"
         >
           {showPassword ? (
             <Eye className="text-gray-300 w-5" />
