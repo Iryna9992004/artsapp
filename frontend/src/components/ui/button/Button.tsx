@@ -6,9 +6,10 @@ export default function Button({
   variant = "primary",
   type,
   onClick,
+  disabled,
 }: ButtonProps) {
   const baseClasses =
-    "px-6 py-3 rounded-full text-white font-bold cursor-pointer transition-all duration-300 ease-out transform relative overflow-hidden group active:scale-95";
+    "px-6 py-3 rounded-full text-white font-bold cursor-pointer transition-all duration-300 ease-out transform relative overflow-hidden group active:scale-95 disabled:opacity-50 disabled:pointer-events-none";
 
   const primaryClasses =
     "bg-gradient-to-r from-violet-500 to-purple-600 hover:from-violet-600 hover:to-purple-700 hover:shadow-2xl hover:shadow-purple-500/50 hover:scale-105 hover:-translate-y-1";
@@ -18,6 +19,7 @@ export default function Button({
 
   return (
     <button
+      disabled={disabled}
       type={type as never}
       className={`${baseClasses} ${variant === "primary" ? primaryClasses : secondaryClasses}`}
       onClick={onClick}

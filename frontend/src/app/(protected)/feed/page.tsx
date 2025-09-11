@@ -3,7 +3,7 @@ import FeedMessage from "../../../components/entities/feed-message";
 
 export default function Feed() {
   return (
-    <div className="pb-3 relative max-h-[90vh] overflow-y-auto">
+    <div className="pb-30 relative max-h-[90vh] overflow-y-auto">
       <SearchInput />
       <div className="pt-10" />
       <FeedMessage

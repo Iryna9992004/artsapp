@@ -1,6 +1,6 @@
 "use client";
 import { useRouter } from "next/navigation";
-import Button from "@/components/ui/button/Button";
+import Button from "@/components/ui/button";
 import React from "react";
 
 export default function OnboardingNavigation() {

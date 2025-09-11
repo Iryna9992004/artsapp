@@ -1,5 +1,5 @@
 "use client";
-import Button from "@/components/ui/button/Button";
+import Button from "@/components/ui/button";
 import DragAndDrop from "@/components/ui/drag-and-drop";
 import Input from "@/components/ui/input";
 import TextArea from "@/components/ui/text-area/TextArea";
