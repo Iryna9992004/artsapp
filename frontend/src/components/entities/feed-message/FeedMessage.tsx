@@ -26,7 +26,7 @@ const FeedMessage: React.FC<FeedMessageProps> = ({
   const pushToChat = (e: Event) => {
     e.preventDefault();
     e.stopPropagation();
-    router.push(`/feed/1?message=${encodeURIComponent(text)}`);
+    router.push(`/feed/chat/1?message=${encodeURIComponent(text)}`);
   };
 
   return (

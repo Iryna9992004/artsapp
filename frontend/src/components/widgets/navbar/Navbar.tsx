@@ -17,15 +17,32 @@ export default function Navbar() {
     if (pathname === "/events") router.push("/feed/events");
   };
 
-  const noSearch = useMemo(
-    () => searchParams.toString().length === 0,
-    [searchParams]
+  const showNavbar = useMemo(() => {
+    if (
+      pathname === "/feed/create" ||
+      pathname === "/posts/create" ||
+      pathname === "/feed/events"
+    )
+      return true;
+    if (searchParams.toString().length === 0) return false;
+
+    return mainPaths.some(
+      (p) => pathname === p || pathname.startsWith(p + "/")
+    );
+  }, [searchParams, pathname]);
+
+  const isCreatePage = useMemo(
+    () =>
+      pathname === "/feed/create" ||
+      pathname === "/posts/create" ||
+      pathname === "/feed/events",
+    [pathname]
   );
 
   return (
     <div className="sticky top-0 left-0 right-0 w-full h-fit bg-black px-8 py-4 border-b flex items-center justify-between gap-4 z-1000">
       <div className="flex items-center gap-2">
-        {!noSearch || !mainPaths.includes(pathname) ? (
+        {showNavbar ? (
           <ChevronLeft
             className="text-white cursor-pointer"
             onClick={() => router.back()}
@@ -36,11 +53,13 @@ export default function Navbar() {
         </h1>
       </div>
 
-      <button onClick={() => handleCreate()}>
-        <div className="transform rotate-45 rounded-sm bg-pink-800 border border-white/60 p-1 cursor-pointer hover:bg-pink-900">
-          <Plus className="text-white transform rotate-45" />
-        </div>
-      </button>
+      {!isCreatePage ? (
+        <button onClick={() => handleCreate()}>
+          <div className="transform rotate-45 rounded-sm bg-pink-800 border border-white/60 p-1 cursor-pointer hover:bg-pink-900">
+            <Plus className="text-white transform rotate-45" />
+          </div>
+        </button>
+      ) : null}
     </div>
   );
 }
