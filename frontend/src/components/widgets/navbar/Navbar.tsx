@@ -14,14 +14,14 @@ export default function Navbar() {
   const handleCreate = () => {
     if (pathname.includes("/feed")) router.push("/feed/create");
     if (pathname.includes("/posts")) router.push("/posts/create");
-    if (pathname.includes("/events")) router.push("/feed/events");
+    if (pathname.includes("/events")) router.push("/feed/create");
   };
 
   const showNavbar = useMemo(() => {
     if (
       pathname === "/feed/create" ||
       pathname === "/posts/create" ||
-      pathname === "/feed/events"
+      pathname === "/events/create"
     )
       return true;
     if (searchParams.toString().length === 0) return false;
@@ -35,7 +35,7 @@ export default function Navbar() {
     () =>
       pathname === "/feed/create" ||
       pathname === "/posts/create" ||
-      pathname === "/feed/events",
+      pathname === "/feed/create",
     [pathname]
   );
 
