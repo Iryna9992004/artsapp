@@ -3,5 +3,6 @@ export const pathnames = {
   "/posts": "ArtsApp Posts",
   "/events": "ArtsApp Events",
   "/posts/create": "Create Post",
-  "/feed/create": "Create Topic"
-}
+  "/feed/create": "Create Topic",
+  "/events/create": "Create Event",
+};

@@ -15,7 +15,7 @@ export default function Tabbar() {
     if (
       pathname === "/feed/create" ||
       pathname === "/posts/create" ||
-      pathname === "/event/create"
+      pathname === "/events/create"
     )
       return false;
 

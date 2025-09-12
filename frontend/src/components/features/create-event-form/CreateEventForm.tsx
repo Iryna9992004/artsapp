@@ -4,31 +4,47 @@ import { useForm } from "react-hook-form";
 import { CreateEventFormInputs } from "./inputs";
 import Button from "@/components/ui/button";
 import TextArea from "@/components/ui/text-area/TextArea";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { createEventFormvalidationSchema } from "./schema";
 
 export default function CreateEventForm() {
   const {
     register,
     handleSubmit,
-    formState: { errors },
-  } = useForm<CreateEventFormInputs>();
+    formState: { errors, isValid },
+  } = useForm<CreateEventFormInputs>({
+    resolver: zodResolver(createEventFormvalidationSchema),
+    defaultValues: {
+      theme: "",
+      title: "",
+      description: "",
+    },
+  });
+
+  const submit = () => {
+    if (!isValid) return;
+  };
   return (
     <div>
-      <form className="w-100 max-w-full flex flex-col gap-5">
+      <form
+        className="w-full max-w-full flex flex-col gap-5"
+        onSubmit={handleSubmit(submit)}
+      >
         <h1 className="text-3xl text-center font-bold text-white mb-10">
           Share intersting events of your music life ...
         </h1>
         <Input
-          register={register('theme')}
+          register={register("theme")}
           placeholder="Write the theme of your event"
           errorMessage={errors.theme?.message}
         />
         <Input
-          register={register('title')}
+          register={register("title")}
           placeholder="Write a title of title"
           errorMessage={errors.title?.message}
         />
         <TextArea
-          register={register('description')}
+          register={register("description")}
           placeholder="Write a description of event"
           errorMessage={errors.description?.message}
         />

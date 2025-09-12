@@ -14,7 +14,7 @@ export default function Navbar() {
   const handleCreate = () => {
     if (pathname.includes("/feed")) router.push("/feed/create");
     if (pathname.includes("/posts")) router.push("/posts/create");
-    if (pathname.includes("/events")) router.push("/feed/create");
+    if (pathname.includes("/events")) router.push("/events/create");
   };
 
   const showNavbar = useMemo(() => {
@@ -35,7 +35,7 @@ export default function Navbar() {
     () =>
       pathname === "/feed/create" ||
       pathname === "/posts/create" ||
-      pathname === "/feed/create",
+      pathname === "/events/create",
     [pathname]
   );
 
