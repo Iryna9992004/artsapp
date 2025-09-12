@@ -1,4 +1,4 @@
-import SearchInput from "@/components/ui/search-input";
+import SearchInput from "@/components/features/search-input";
 import FeedMessage from "../../../components/entities/feed-message";
 
 export default function Feed() {

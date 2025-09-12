@@ -1,7 +1,7 @@
 "use client";
 import ChatMessage from "@/components/entities/chat-message/ChatMessage";
 import SendForm from "@/components/features/send-form";
-import { SendFormInputs } from "@/shared/validations/send-input/inputs";
+import { SendInputFormInputs } from "@/shared/validations/send-input/inputs";
 import { sendFormValidationSchema } from "@/shared/validations/send-input/schema";
 import { zodResolver } from "@hookform/resolvers/zod";
 import React from "react";
@@ -13,7 +13,7 @@ export default function Page() {
     handleSubmit,
     getValues,
     formState: { isValid },
-  } = useForm<SendFormInputs>({
+  } = useForm<SendInputFormInputs>({
     resolver: zodResolver(sendFormValidationSchema),
     defaultValues: {
       text: "",

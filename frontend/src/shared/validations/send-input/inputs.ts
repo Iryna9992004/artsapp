@@ -1,3 +1,3 @@
-export interface SendFormInputs {
-    text: string;
+export interface SendInputFormInputs {
+  text: string;
 }

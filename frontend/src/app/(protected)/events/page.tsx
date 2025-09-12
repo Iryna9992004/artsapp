@@ -1,5 +1,5 @@
 import Event from "@/components/entities/event";
-import SearchInput from "@/components/ui/search-input";
+import SearchInput from "@/components/features/search-input";
 import React from "react";
 
 export default function Events() {
