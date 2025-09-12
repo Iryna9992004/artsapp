@@ -1,3 +1,4 @@
+"use client";
 import Button from "@/components/ui/button";
 import TextArea from "@/components/ui/text-area/TextArea";
 import React from "react";
@@ -19,7 +20,7 @@ export default function CreateTopicForm() {
   });
 
   const submit = () => {
-    if(!isValid) return;
+    if (!isValid) return;
   };
 
   return (

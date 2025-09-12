@@ -1,5 +1,10 @@
-"use client";
 import CreateTopicForm from "@/components/features/create-topic-form";
+import { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "Create Topic",
+  description: "On this page you can create your own topic",
+};
 
 export default function Create() {
   return (
