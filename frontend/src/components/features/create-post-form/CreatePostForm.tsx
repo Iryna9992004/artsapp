@@ -2,22 +2,46 @@ import Button from "@/components/ui/button";
 import DragAndDrop from "@/components/ui/drag-and-drop";
 import Input from "@/components/ui/input";
 import TextArea from "@/components/ui/text-area/TextArea";
-import React from "react";
+import React, { useState } from "react";
 import { useForm } from "react-hook-form";
 import { CreatePostFormInputs } from "./inputs";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { createPostFormValidationSchema } from "./schema";
 
 export default function CreatePostForm() {
   const {
     register,
     handleSubmit,
-    formState: { errors },
-  } = useForm<CreatePostFormInputs>();
+    formState: { errors, isValid, isSubmitted },
+  } = useForm<CreatePostFormInputs>({
+    resolver: zodResolver(createPostFormValidationSchema),
+    defaultValues: {
+      theme: "",
+      title: "",
+      description: "",
+    },
+  });
+
+  const [file, setFile] = useState<File | null | undefined>(undefined);
+
+  const submit = () => {
+    if (!file) return;
+    if (!isValid) return;
+  };
+
   return (
-    <form className="w-100 max-w-full flex flex-col gap-5">
+    <form
+      className="w-100 max-w-full flex flex-col gap-5"
+      onSubmit={handleSubmit(submit)}
+    >
       <h1 className="text-3xl text-center font-bold text-white mb-10">
         Share your thoughts in post...
       </h1>
-      <DragAndDrop />
+      <DragAndDrop
+        value={file as never}
+        setValue={setFile}
+        errorMessage={isSubmitted && !file ? "File is required" : null}
+      />
       <Input
         register={register("title")}
         placeholder="Write a title of post"
@@ -29,7 +53,7 @@ export default function CreatePostForm() {
         errorMessage={errors.description?.message}
       />
 
-      <Button text="Publish Post" />
+      <Button text="Publish Post" type="submit" />
     </form>
   );
 }

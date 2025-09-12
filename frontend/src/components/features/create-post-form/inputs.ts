@@ -1,4 +1,5 @@
 export interface CreatePostFormInputs {
-    title: string;
-    description: string;
+  theme: string;
+  title: string;
+  description: string;
 }
