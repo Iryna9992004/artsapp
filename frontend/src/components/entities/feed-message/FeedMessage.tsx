@@ -61,8 +61,16 @@ const FeedMessage: React.FC<FeedMessageProps> = ({
 
               {repliesOpened ? (
                 <div className="flex flex-col gap-1 w-full pt-2">
-                  <FeedReply onClick={pushToChat} />
-                  <FeedReply onClick={pushToChat} />
+                  <FeedReply
+                    onClick={pushToChat}
+                    author="Username"
+                    text="vdsvssvdvd"
+                  />
+                  <FeedReply
+                    onClick={pushToChat}
+                    author="Username"
+                    text="vdsvssvdvd"
+                  />
                 </div>
               ) : null}
             </div>
