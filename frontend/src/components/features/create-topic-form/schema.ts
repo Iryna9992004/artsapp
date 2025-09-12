@@ -1,4 +1,3 @@
-// schema.ts
 import { z } from "zod";
 
 export const createTopicFormvalidationSchema = z.object({

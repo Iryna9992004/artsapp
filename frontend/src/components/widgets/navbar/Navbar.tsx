@@ -31,13 +31,15 @@ export default function Navbar() {
     );
   }, [searchParams, pathname]);
 
-  const isCreatePage = useMemo(
-    () =>
+  const isCreatePage = useMemo(() => {
+    if (!pathname) return false;
+    
+    return (
       pathname === "/feed/create" ||
       pathname === "/posts/create" ||
-      pathname === "/events/create",
-    [pathname]
-  );
+      pathname === "/events/create"
+    );
+  }, [pathname]);
 
   return (
     <div className="sticky top-0 left-0 right-0 w-full h-fit bg-black px-8 py-4 border-b flex items-center justify-between gap-4 z-1000">

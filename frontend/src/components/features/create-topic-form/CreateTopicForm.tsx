@@ -12,7 +12,6 @@ export default function CreateTopicForm() {
     handleSubmit,
     formState: { errors, isValid },
   } = useForm<CreateTopicFormInputs>({
-    mode: "onChange",
     resolver: zodResolver(createTopicFormvalidationSchema),
     defaultValues: {
       topic: "",
