@@ -9,7 +9,7 @@ import { useRouter } from "next/navigation";
 const FeedMessage: React.FC<FeedMessageProps> = ({
   text,
   timestamp,
-  isMine,
+  author,
   messagesCount = 0,
   colorNumber = "1",
 }) => {
@@ -30,7 +30,9 @@ const FeedMessage: React.FC<FeedMessageProps> = ({
   };
 
   return (
-    <div className={`w-full flex ${isMine ? "justify-end" : "justify-start"}`}>
+    <div
+      className={`w-full flex ${author.email ? "justify-end" : "justify-start"}`}
+    >
       <div
         className="relative flex justify-end mb-4 px-4 min-w-80 w-[30%] max-w-[45%] cursor-pointer"
         onClick={() => setRepliesOpened(!repliesOpened)}
@@ -42,6 +44,9 @@ const FeedMessage: React.FC<FeedMessageProps> = ({
             <div
               className={`${getColorConfig(colorNumber).bg} text-white rounded-2xl px-4 py-3 relative`}
             >
+              <span className="text-white font-bold text-md">
+                {author.full_name}
+              </span>
               <div
                 className="text-md leading-relaxed cursor-pointer"
                 onClick={pushToChat as never}
@@ -77,7 +82,7 @@ const FeedMessage: React.FC<FeedMessageProps> = ({
           </div>
         </div>
 
-        {isMine ? (
+        {author.email ? (
           <div
             className={`absolute right-[9px] -bottom-[4px] w-0 h-0 border-l-[9px] border-l-transparent border-r-[9px] border-r-transparent border-b-[12px] ${getColorConfig(colorNumber).rightCorner} transform -rotate-226`}
           />
