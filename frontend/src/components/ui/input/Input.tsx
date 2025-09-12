@@ -38,9 +38,11 @@ export default function Input({
         </button>
       )}
 
-      <div className="bg-red-500 border border-red-700 text-white font-medium flex items-center justify-center">
-        <span>{errorMessage as string}</span>
-      </div>
+      {errorMessage ? (
+        <div className="absolute top-full mt-1 z-1000 bg-red-500/90 border px-3 py-1 rounded-full border-red-700 w-full max-w-full text-white font-medium flex items-center justify-center text-sm text-center pointer-events-none">
+          <span>{errorMessage}</span>
+        </div>
+      ) : null}
     </div>
   );
 }

@@ -21,12 +21,12 @@ export default function CreatePostForm() {
       <Input
         register={register("title")}
         placeholder="Write a title of post"
-        errorMessage={errors.title}
+        errorMessage={errors.title?.message}
       />
       <TextArea
         register={register("description")}
         placeholder="Write a description of post"
-        errorMessage={errors.description}
+        errorMessage={errors.description?.message}
       />
 
       <Button text="Publish Post" />

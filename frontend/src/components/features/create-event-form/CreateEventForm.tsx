@@ -20,17 +20,17 @@ export default function CreateEventForm() {
         <Input
           register={register('theme')}
           placeholder="Write the theme of your event"
-          errorMessage={errors.theme}
+          errorMessage={errors.theme?.message}
         />
         <Input
           register={register('title')}
           placeholder="Write a title of title"
-          errorMessage={errors.title}
+          errorMessage={errors.title?.message}
         />
         <TextArea
           register={register('description')}
           placeholder="Write a description of event"
-          errorMessage={errors.description}
+          errorMessage={errors.description?.message}
         />
 
         <Button text="Publish Event" />

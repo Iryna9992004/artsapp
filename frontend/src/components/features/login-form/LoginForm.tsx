@@ -4,31 +4,47 @@ import Input from "@/components/ui/input";
 import Link from "next/link";
 import { useForm } from "react-hook-form";
 import { LoginFormInputs } from "./inputs";
+import { loginFormvalidationSchema } from "./schema";
+import { zodResolver } from "@hookform/resolvers/zod";
 
 export default function LoginForm() {
   const {
     register,
     handleSubmit,
-    formState: { errors },
-  } = useForm<LoginFormInputs>();
+    formState: { errors, isValid },
+  } = useForm<LoginFormInputs>({
+    resolver: zodResolver(loginFormvalidationSchema),
+    defaultValues: {
+      email: "",
+      password: "",
+    },
+  });
+
+  const submit = () => {
+    if (!isValid) return;
+  };
+
   return (
     <div className="flex flex-col gap-3">
-      <form className="flex flex-col gap-6 min-w-80 max-w-full">
+      <form
+        className="flex flex-col gap-6 min-w-80 max-w-full"
+        onSubmit={handleSubmit(submit)}
+      >
         <div className="flex flex-col gap-2">
           <Input
             placeholder="Write your email"
             register={register("email")}
-            errorMessage={errors.email}
+            errorMessage={errors.email?.message}
           />
           <Input
             placeholder="Write your password"
             register={register("password")}
             type="password"
-            errorMessage={errors.password}
+            errorMessage={errors.password?.message}
           />
         </div>
 
-        <Button text="Login" />
+        <Button text="Login" type="submit" />
       </form>
       <div className="text-center text-gray-300 font-bold">
         Don`t` have an account?{" "}
