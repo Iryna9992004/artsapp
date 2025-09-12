@@ -1,17 +1,18 @@
 import Input from "@/components/ui/input";
-import React from "react";
+import React, { useState } from "react";
 import { useForm } from "react-hook-form";
 import { CreateEventFormInputs } from "./inputs";
 import Button from "@/components/ui/button";
 import TextArea from "@/components/ui/text-area/TextArea";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { createEventFormvalidationSchema } from "./schema";
+import DragAndDrop from "@/components/ui/drag-and-drop";
 
 export default function CreateEventForm() {
   const {
     register,
     handleSubmit,
-    formState: { errors, isValid },
+    formState: { errors, isValid, isSubmitted },
   } = useForm<CreateEventFormInputs>({
     resolver: zodResolver(createEventFormvalidationSchema),
     defaultValues: {
@@ -21,9 +22,13 @@ export default function CreateEventForm() {
     },
   });
 
+  const [file, setFile] = useState<File | null | undefined>(undefined);
+
   const submit = () => {
+    if (!file) return;
     if (!isValid) return;
   };
+
   return (
     <div>
       <form
@@ -33,6 +38,11 @@ export default function CreateEventForm() {
         <h1 className="text-3xl text-center font-bold text-white mb-10">
           Share intersting events of your music life ...
         </h1>
+        <DragAndDrop
+          value={file as never}
+          setValue={setFile}
+          errorMessage={isSubmitted && !file ? "File is required" : null}
+        />
         <Input
           register={register("theme")}
           placeholder="Write the theme of your event"
