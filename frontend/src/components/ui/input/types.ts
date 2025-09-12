@@ -1,6 +1,7 @@
+import { UseFormRegisterReturn, FieldError } from "react-hook-form";
 export interface InputProps {
-    placeholder: string;
-    value: string;
-    setValue: (text:string) => void;
-    type?: 'password' | "text";
+  placeholder: string;
+  register: UseFormRegisterReturn<string>;
+  type?: "password" | "text";
+  errorMessage?: string | FieldError;
 }

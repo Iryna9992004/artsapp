@@ -1,5 +1,7 @@
+import { FieldError, UseFormRegisterReturn } from "react-hook-form";
+
 export interface TextAreaProps {
   placeholder: string;
-  value: string;
-  setValue: (text: string) => void;
+  register: UseFormRegisterReturn;
+  errorMessage?: string | FieldError;
 }

@@ -4,10 +4,10 @@ import { InputProps } from "./types";
 import { Eye, EyeOff } from "react-feather";
 
 export default function Input({
-  value,
   placeholder,
-  setValue,
   type,
+  errorMessage,
+  register,
 }: InputProps) {
   const [showPassword, setShowPassword] = useState(false);
   const isPassword = type === "password";
@@ -18,11 +18,9 @@ export default function Input({
         type={
           isPassword ? (showPassword ? "text" : "password") : (type ?? "text")
         }
-        name={placeholder}
         placeholder={placeholder}
         className="bg-[#2F2F2F] border border-gray-600 px-5 py-3 placeholder-gray-300 rounded-full outline-none w-full caret-white focus:border-white text-white pr-14"
-        value={value}
-        onChange={(e) => setValue(e.target.value)}
+        {...register}
       />
       {isPassword && (
         <button
@@ -39,6 +37,10 @@ export default function Input({
           )}
         </button>
       )}
+
+      <div className="bg-red-500 border border-red-700 text-white font-medium flex items-center justify-center">
+        <span>{errorMessage as string}</span>
+      </div>
     </div>
   );
 }

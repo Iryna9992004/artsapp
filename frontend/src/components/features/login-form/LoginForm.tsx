@@ -2,25 +2,29 @@
 import Button from "@/components/ui/button";
 import Input from "@/components/ui/input";
 import Link from "next/link";
-import { useState } from "react";
+import { useForm } from "react-hook-form";
+import { LoginFormInputs } from "./inputs";
 
 export default function LoginForm() {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<LoginFormInputs>();
   return (
     <div className="flex flex-col gap-3">
       <form className="flex flex-col gap-6 min-w-80 max-w-full">
         <div className="flex flex-col gap-2">
           <Input
             placeholder="Write your email"
-            value={email}
-            setValue={setEmail}
+            register={register("email")}
+            errorMessage={errors.email}
           />
           <Input
             placeholder="Write your password"
-            value={password}
-            setValue={setPassword}
+            register={register("password")}
             type="password"
+            errorMessage={errors.password}
           />
         </div>
 
