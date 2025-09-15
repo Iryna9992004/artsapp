@@ -1,8 +1,9 @@
-CREATE TABLE IF NOT EXISTS users (
-    id UUID DEFAULT generateUUIDv4(),
-    full_name String,
-    email String,
-    pass String,
-) ENGINE = MergeTree()
-ORDER BY id;
+CREATE TABLE users (
+    id SERIAL PRIMARY KEY,
+    full_name VARCHAR(50) UNIQUE NOT NULL,
+    email VARCHAR(254) UNIQUE NOT NULL,
+    pass VARCHAR(50) NOT NULL,
+    occupation VARCHAR(50) NOT NULL,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+)
 
