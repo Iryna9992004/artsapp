@@ -1,5 +1,5 @@
 import * as dotenv from "dotenv";
-dotenv.config({ path: "../.env" });
+dotenv.config({ path: ".env" });
 import { migrate } from "postgres-migrations";
 
 async function run() {
@@ -13,7 +13,7 @@ async function run() {
     defaultDatabase: process.env.DB_TYPE,
   };
 
-  await migrate(dbConfig, "../migrations");
+  await migrate(dbConfig, "./migrations");
 }
 
 run();

@@ -1,1 +1,2 @@
-node ./migrate.js
+#!/bin/bash
+node ./scripts/migrate.js
