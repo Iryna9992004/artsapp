@@ -1,20 +1,20 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
-import { UserRepositoryClickhouse } from '../infrastructure/repos/user.repository';
 import { User } from '../domain/entities/user.entity';
 import * as jwt from 'jsonwebtoken';
 import * as bcrypt from 'bcryptjs';
 import config from 'src/shared/config';
 import { RedisdbService } from 'src/redisdb/redisdb.service';
+import { UserRepositoryPostgres } from '../infrastructure/repos/user.repository';
 
 @Injectable()
 export class RegisterUsecase {
   constructor(
-    private readonly userRepositoryClickhouse: UserRepositoryClickhouse,
+    private readonly userRepositoryPostgres: UserRepositoryPostgres,
     private readonly redisService: RedisdbService,
   ) {}
 
   async exec(userAgent: string, user: User) {
-    const foundUser = await this.userRepositoryClickhouse.findByEmail(
+    const foundUser = await this.userRepositoryPostgres.findByEmail(
       user.email,
     );
     if (foundUser) {
@@ -22,7 +22,7 @@ export class RegisterUsecase {
     }
 
     const pass = await bcrypt.hash(user.pass, 4);
-    const createdUser = await this.userRepositoryClickhouse.create({
+    const createdUser = await this.userRepositoryPostgres.create({
       ...user,
       pass,
     });
