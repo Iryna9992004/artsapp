@@ -7,6 +7,7 @@ import { LoginFormInputs } from "./inputs";
 import { loginFormvalidationSchema } from "./schema";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useRouter } from "next/navigation";
+import { toast } from "react-toastify";
 
 export default function LoginForm() {
   const {
@@ -32,10 +33,12 @@ export default function LoginForm() {
       },
       body: JSON.stringify({ ...data }),
     });
+    const result = await response.json();
     if (response.ok) {
-      const resp = await response.json();
-      localStorage.setItem("userSessionId", resp.data.userSessionId);
+      localStorage.setItem("userSessionId", result.data.userSessionId);
       router.replace("/feed");
+    } else {
+      toast.error(result.message);
     }
   };
 
