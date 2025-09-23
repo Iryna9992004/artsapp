@@ -7,7 +7,6 @@ export async function GET(
   { params }: { params: { userSessionId: string } }
 ) {
   try {
-    console.log("-=-=-=", params.userSessionId);
     const apiResponse = await $api.get(`/auth/refresh/${params.userSessionId}`);
     return NextResponse.json(
       { message: "Token refreshed successfuly", data: { ...apiResponse.data } },
@@ -15,7 +14,10 @@ export async function GET(
     );
   } catch (e) {
     if (e instanceof AxiosError) {
-      return NextResponse.json({ message: e.message }, { status: e.status });
+      return NextResponse.json(
+        { message: e.response?.data.message },
+        { status: e.status }
+      );
     }
     return NextResponse.json({ message: "Failed to refresh" }, { status: 500 });
   }
