@@ -1,14 +1,12 @@
 import { $api } from "@/shared/api";
 import { AxiosError } from "axios";
-import { NextRequest, NextResponse } from "next/server";
+import { NextResponse } from "next/server";
 
-export async function POST(req: NextRequest) {
+export async function GET({ params }: { params: { userSessionId: string } }) {
   try {
-    const body = await req.json();
-    console.log(body.userSessionId);
-    const apiResponse = await $api.get(`/auth/refresh/${body.userSessionId}`);
+    await $api.get(`/auth/logout/${params.userSessionId}`);
     return NextResponse.json(
-      { message: "Token refreshed successfuly", data: { ...apiResponse.data } },
+      { message: "User logged out successfuly" },
       { status: 200 }
     );
   } catch (e) {

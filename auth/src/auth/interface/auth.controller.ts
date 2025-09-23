@@ -34,9 +34,11 @@ export class AuthController {
     return this.refreshUsecase.execute(userSessionId);
   }
 
-  @Get('/logout')
-  async logout(@Req() request: Request, @Res() response: Response) {
-    const { userSessionId } = request.body;
+  @Get('/logout/:userSessionId')
+  async logout(
+    @Param('userSessionId') userSessionId: string,
+    @Res() response: Response,
+  ) {
     const res = await this.logoutUsecase.execute(userSessionId);
     return response.json(res);
   }
