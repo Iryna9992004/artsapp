@@ -7,6 +7,7 @@ import { RegisterFormInputs } from "./inputs";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { registerFormvalidationSchema } from "./schema";
+import { useRouter } from "next/navigation";
 
 export default function RegisterForm() {
   const {
@@ -23,8 +24,22 @@ export default function RegisterForm() {
     },
   });
 
-  const submit = () => {
+  const router = useRouter();
+
+  const submit = async (data: RegisterFormInputs) => {
     if (!isValid) return;
+
+    const response = await fetch("/api/auth/register", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ ...data }),
+    });
+    if (response.status === 200) {
+      console.log(data);
+      router.replace("/feed");
+    }
   };
 
   return (

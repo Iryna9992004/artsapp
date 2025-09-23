@@ -20,6 +20,9 @@ interface Config {
     port: number;
     type: string;
   };
+  client: {
+    base_url: string;
+  };
 }
 
 const config: Config = {
@@ -40,6 +43,9 @@ const config: Config = {
     host: process.env.PG_HOST,
     port: Number(process.env.PG_PORT),
     type: process.env.DB_TYPE,
+  },
+  client: {
+    base_url: process.env.CLIENT_BASE_URL,
   },
 };
 
