@@ -6,6 +6,7 @@ import { useForm } from "react-hook-form";
 import { LoginFormInputs } from "./inputs";
 import { loginFormvalidationSchema } from "./schema";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useRouter } from "next/navigation";
 
 export default function LoginForm() {
   const {
@@ -20,8 +21,20 @@ export default function LoginForm() {
     },
   });
 
-  const submit = () => {
+  const router = useRouter();
+
+  const submit = async (data: LoginFormInputs) => {
     if (!isValid) return;
+    const response = await fetch("/api/auth/login", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ ...data }),
+    });
+    if (response.ok) {
+      router.replace("/feed");
+    }
   };
 
   return (
