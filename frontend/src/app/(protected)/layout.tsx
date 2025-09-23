@@ -26,11 +26,11 @@ export default function ProtectedLayout({
           },
           body: JSON.stringify({ userSessionId }),
         });
-        const data = await response.json();
-        if (!data) {
+        if (!response.ok) {
           router.replace("/login");
         }
       } catch (e) {
+        router.replace("/login");
         console.error(e);
       }
     }

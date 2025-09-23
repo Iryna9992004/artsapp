@@ -7,8 +7,8 @@ import config from 'src/shared/config';
 export class RefreshUsecase {
   constructor(private redisService: RedisdbService) {}
 
-  async execute(ip: string) {
-    const foundSession = await this.redisService.getValue(ip);
+  async execute(userSessionId: string) {
+    const foundSession = await this.redisService.getValue(userSessionId);
     console.log(foundSession);
     if (!foundSession) {
       throw new UnauthorizedException('Session expired');
@@ -32,8 +32,8 @@ export class RefreshUsecase {
       { expiresIn: '2h' },
     );
 
-    await this.redisService.setValue(ip, refreshToken);
+    await this.redisService.setValue(userSessionId, refreshToken);
 
-    return { accessToken };
+    return { accessToken, userSessionId };
   }
 }

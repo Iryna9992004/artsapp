@@ -9,7 +9,7 @@ export async function POST(req: NextRequest) {
     const resp = await $api.get(`/auth/refresh/${body.userSessionId}`);
     console.log(resp);
     return NextResponse.json(
-      { message: "Token refreshed successfuly" },
+      { message: "Token refreshed successfuly", data: { ...resp.data } },
       { status: 200 }
     );
   } catch (e) {
