@@ -9,6 +9,7 @@ export class RefreshUsecase {
 
   async execute(ip: string) {
     const foundSession = await this.redisService.getValue(ip);
+    console.log(foundSession);
     if (!foundSession) {
       throw new UnauthorizedException('Session expired');
     }

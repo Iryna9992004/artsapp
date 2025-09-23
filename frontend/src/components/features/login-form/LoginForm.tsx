@@ -33,6 +33,8 @@ export default function LoginForm() {
       body: JSON.stringify({ ...data }),
     });
     if (response.ok) {
+      const resp = await response.json();
+      localStorage.setItem("userSessionId", resp.data.userSessionId);
       router.replace("/feed");
     }
   };

@@ -1,9 +1,10 @@
-import { Controller, Get, Post, Req, Res } from '@nestjs/common';
+import { Controller, Get, Param, Post, Req, Res } from '@nestjs/common';
 import { RegisterUsecase } from '../application/register.usecase';
 import { Request, Response } from 'express';
 import { LoginUsecase } from '../application/login.usecase';
 import { RefreshUsecase } from '../application/refresh.usecase';
 import { LogoutUsecase } from '../application/logout.usecase';
+import * as uuid from 'uuid';
 
 @Controller('auth')
 export class AuthController {
@@ -16,56 +17,27 @@ export class AuthController {
 
   @Post('register')
   async register(@Req() request: Request, @Res() response: Response) {
-    const userAgent = request.headers['user-agent'];
-    const res = await this.registerUsecase.exec(userAgent, request.body);
-    if (res) {
-      response.cookie('accessToken', res.accessToken, {
-        sameSite: false,
-        secure: true,
-        maxAge: 15 * 60 * 1000,
-      });
-      response.cookie('userAgentSession', userAgent, {
-        maxAge: 120 * 60 * 1000,
-        secure: true,
-        sameSite: false,
-      });
-    }
-
-    return response.json({ ...res.user });
+    const userSessionId = uuid.v4();
+    const res = await this.registerUsecase.exec(userSessionId, request.body);
+    return response.json({ ...res.user, userSessionId });
   }
 
   @Post('login')
   async login(@Req() request: Request, @Res() response: Response) {
-    const userAgent = request.headers['user-agent'];
-    const res = await this.loginUsecase.exec(`${userAgent}`, request.body);
-    if (res) {
-      response.cookie('accessToken', res.accessToken, {
-        sameSite: false,
-        secure: true,
-        maxAge: 15 * 60 * 1000,
-      });
-      response.cookie('userAgentSession', userAgent, {
-        maxAge: 120 * 60 * 1000,
-        secure: true,
-        sameSite: false,
-      });
-    }
-
-    return response.json({ ...res.user });
+    const userSessionId = uuid.v4();
+    const res = await this.loginUsecase.exec(`${userSessionId}`, request.body);
+    return response.json({ ...res.user, userSessionId });
   }
 
-  @Get('/refresh')
-  async refresh(@Req() request: Request) {
-    const userAgent = request.cookies['userAgentSession'];
-    return this.refreshUsecase.execute(userAgent);
+  @Get('/refresh/:userSessionId')
+  async refresh(@Param('userSessionId') userSessionId: string) {
+    return this.refreshUsecase.execute(userSessionId);
   }
 
   @Get('/logout')
   async logout(@Req() request: Request, @Res() response: Response) {
-    const userAgent = request.cookies['userAgentSession'];
-    response.clearCookie('accessToken');
-    response.clearCookie('userAgentSession');
-    const res = await this.logoutUsecase.execute(userAgent);
+    const { userSessionId } = request.body;
+    const res = await this.logoutUsecase.execute(userSessionId);
     return response.json(res);
   }
 }

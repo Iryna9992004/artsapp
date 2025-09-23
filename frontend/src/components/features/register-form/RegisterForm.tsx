@@ -31,13 +31,16 @@ export default function RegisterForm() {
 
     const response = await fetch("/api/auth/register", {
       method: "POST",
+      credentials: "include",
       headers: {
         "Content-Type": "application/json",
       },
       body: JSON.stringify({ ...data }),
     });
     if (response.status === 200) {
-      console.log(data);
+      const data = await response.json();
+      console.log(data.userSessionId);
+      localStorage.setItem("userSessionId", data.userSessionId);
       router.replace("/feed");
     }
   };

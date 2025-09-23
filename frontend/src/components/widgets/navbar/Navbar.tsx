@@ -1,4 +1,3 @@
-"use client";
 import React, { useMemo } from "react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { ChevronLeft, Plus } from "react-feather";

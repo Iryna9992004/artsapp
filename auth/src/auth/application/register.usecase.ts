@@ -13,10 +13,8 @@ export class RegisterUsecase {
     private readonly redisService: RedisdbService,
   ) {}
 
-  async exec(userAgent: string, user: User) {
-    const foundUser = await this.userRepositoryPostgres.findByEmail(
-      user.email,
-    );
+  async exec(userSessionId: string, user: User) {
+    const foundUser = await this.userRepositoryPostgres.findByEmail(user.email);
     if (foundUser) {
       throw new BadRequestException('User with this email already exists');
     }
@@ -39,7 +37,7 @@ export class RegisterUsecase {
       { expiresIn: '2h' },
     );
 
-    await this.redisService.setValue(userAgent, refreshToken);
+    await this.redisService.setValue(userSessionId, refreshToken);
 
     return { accessToken, user: createdUser };
   }
