@@ -1,6 +1,6 @@
 import React, { useMemo } from "react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
-import { ChevronLeft, Plus } from "react-feather";
+import { ChevronLeft, LogOut, Plus } from "react-feather";
 
 import { pathnames } from "./pathnames";
 import { mainPaths } from "@/shared/paths/main-paths";
@@ -14,6 +14,28 @@ export default function Navbar() {
     if (pathname.includes("/feed")) router.push("/feed/create");
     if (pathname.includes("/posts")) router.push("/posts/create");
     if (pathname.includes("/events")) router.push("/events/create");
+  };
+
+  const handleLogout = async () => {
+    const userSessionId = localStorage.getItem("userSessionId");
+    if(!userSessionId){
+      router.replace('/login')
+    }
+    try {
+      const response = await fetch(`/api/auth/logout/${userSessionId}`, {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+      if (response.ok) {
+        localStorage.removeItem("userSessionId");
+        router.replace("/login");
+      }
+    } catch (e) {
+      console.log(e);
+      console.error(e);
+    }
   };
 
   const showNavbar = useMemo(() => {
@@ -32,7 +54,7 @@ export default function Navbar() {
 
   const isCreatePage = useMemo(() => {
     if (!pathname) return false;
-    
+
     return (
       pathname === "/feed/create" ||
       pathname === "/posts/create" ||
@@ -54,13 +76,17 @@ export default function Navbar() {
         </h1>
       </div>
 
-      {!isCreatePage ? (
-        <button onClick={() => handleCreate()} name="plus" area-label="plus">
-          <div className="transform rotate-45 rounded-sm bg-pink-800 border border-white/60 p-1 cursor-pointer hover:bg-pink-900">
-            <Plus className="text-white transform rotate-45" />
-          </div>
-        </button>
-      ) : null}
+      <div className="flex items-center gap-8">
+        {!isCreatePage ? (
+          <button onClick={() => handleCreate()} name="plus" area-label="plus">
+            <div className="transform rotate-45 rounded-sm bg-pink-800 border border-white/60 p-1 cursor-pointer hover:bg-pink-900">
+              <Plus className="text-white transform rotate-45" />
+            </div>
+          </button>
+        ) : null}
+
+        <LogOut className="text-white cursor-pointer" onClick={handleLogout} />
+      </div>
     </div>
   );
 }

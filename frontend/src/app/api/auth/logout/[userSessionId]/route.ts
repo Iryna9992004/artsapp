@@ -1,8 +1,8 @@
 import { $api } from "@/shared/api";
 import { AxiosError } from "axios";
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 
-export async function GET({ params }: { params: { userSessionId: string } }) {
+export async function GET(request: NextRequest,{ params }: { params: { userSessionId: string } }) {
   try {
     await $api.get(`/auth/logout/${params.userSessionId}`);
     return NextResponse.json(
