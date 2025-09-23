@@ -2,11 +2,13 @@ import { $api } from "@/shared/api";
 import { AxiosError } from "axios";
 import { NextRequest, NextResponse } from "next/server";
 
-export async function POST(req: NextRequest) {
+export async function GET(
+  request: NextRequest,
+  { params }: { params: { userSessionId: string } }
+) {
   try {
-    const body = await req.json();
-    console.log(body.userSessionId);
-    const apiResponse = await $api.get(`/auth/refresh/${body.userSessionId}`);
+    console.log("-=-=-=", params.userSessionId);
+    const apiResponse = await $api.get(`/auth/refresh/${params.userSessionId}`);
     return NextResponse.json(
       { message: "Token refreshed successfuly", data: { ...apiResponse.data } },
       { status: 200 }

@@ -19,12 +19,11 @@ export default function ProtectedLayout({
         if (!userSessionId) {
           router.replace("/login");
         }
-        const response = await fetch("/api/auth/refresh", {
-          method: "POST",
+        const response = await fetch(`/api/auth/refresh/${userSessionId}`, {
+          method: "GET",
           headers: {
             "Content-Type": "application/json",
           },
-          body: JSON.stringify({ userSessionId }),
         });
         if (!response.ok) {
           router.replace("/login");
