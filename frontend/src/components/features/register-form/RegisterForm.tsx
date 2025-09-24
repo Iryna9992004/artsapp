@@ -8,6 +8,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { registerFormvalidationSchema } from "./schema";
 import { useRouter } from "next/navigation";
+import { toast } from "react-toastify";
 
 export default function RegisterForm() {
   const {
@@ -37,11 +38,13 @@ export default function RegisterForm() {
       },
       body: JSON.stringify({ ...data }),
     });
+    const result = await response.json();
     if (response.status === 200) {
-      const data = await response.json();
-      console.log(data.userSessionId);
-      localStorage.setItem("userSessionId", data.userSessionId);
+      console.log(result.userSessionId);
+      localStorage.setItem("userSessionId", result.userSessionId);
       router.replace("/feed");
+    } else {
+      toast.error(result.message);
     }
   };
 

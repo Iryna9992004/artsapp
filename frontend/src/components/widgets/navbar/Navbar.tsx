@@ -18,8 +18,8 @@ export default function Navbar() {
 
   const handleLogout = async () => {
     const userSessionId = localStorage.getItem("userSessionId");
-    if(!userSessionId){
-      router.replace('/login')
+    if (!userSessionId) {
+      router.replace("/login");
     }
     try {
       const response = await fetch(`/api/auth/logout/${userSessionId}`, {
@@ -33,7 +33,6 @@ export default function Navbar() {
         router.replace("/login");
       }
     } catch (e) {
-      console.log(e);
       console.error(e);
     }
   };
