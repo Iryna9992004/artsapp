@@ -1,8 +1,8 @@
 import { Body, Controller, Post } from '@nestjs/common';
-import { CreateTopicUsecase } from '../application/topics/create.topic.usecase';
+import { CreateTopicUsecase } from '../application/create.topic.usecase';
 import { CreateTopicDto } from './dto/create.topic.dto';
 import { ReadTopicDto } from './dto/read.topic.dto';
-import { ReadTopicUsecase } from '../application/topics/read.topic.usecase';
+import { ReadTopicUsecase } from '../application/read.topic.usecase';
 
 @Controller('chat')
 export class ChatController {
