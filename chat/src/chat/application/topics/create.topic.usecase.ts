@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { TopicRepositoryPostgres } from '../infrastructure/repos/topic.repository';
+import { TopicRepositoryPostgres } from '../../infrastructure/repos/topic.repository';
 
 @Injectable()
 export class CreateTopicUsecase {
