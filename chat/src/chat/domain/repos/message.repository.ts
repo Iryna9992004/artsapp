@@ -1,7 +1,7 @@
 import { MessageEntity } from '../entities/message.entity';
 
 export interface MessageRepository {
-  get(topic_id: number): Promise<MessageEntity[]>;
+  getAll(topic_id: number): Promise<MessageEntity[]>;
   create(
     text: string,
     topic_id: number,

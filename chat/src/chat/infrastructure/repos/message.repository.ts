@@ -1,11 +1,13 @@
+import { Injectable } from '@nestjs/common';
 import { MessageEntity } from 'src/chat/domain/entities/message.entity';
 import { MessageRepository } from 'src/chat/domain/repos/message.repository';
 import { PgService } from 'src/pg/pg.service';
 
+@Injectable()
 export class MessageRepositoryPostgres implements MessageRepository {
   constructor(private readonly pgService: PgService) {}
 
-  async get(topic_id: number): Promise<MessageEntity[]> {
+  async getAll(topic_id: number): Promise<MessageEntity[]> {
     const client = this.pgService.getPool();
     const result = await client.query(
       'SELECT * FROM messages WHERE topic_id=($1)',
