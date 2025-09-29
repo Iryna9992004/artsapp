@@ -9,11 +9,17 @@ async function run() {
     password: process.env.PG_PASSWORD,
     host: process.env.PG_HOST,
     port: Number(process.env.PG_PORT),
-    ensureDatabaseExists: true,
-    defaultDatabase: process.env.DB_TYPE,
+    ssl: {
+      rejectUnauthorized: false,
+    },
   };
+
+  console.log("Connecting with config:", {
+    ...dbConfig,
+    password: "***",
+  });
 
   await migrate(dbConfig, "./migrations");
 }
 
-run();
+run().catch(console.error);
