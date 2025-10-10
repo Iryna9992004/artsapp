@@ -3,6 +3,6 @@ import { PgService } from './pg.service';
 
 @Module({
   providers: [PgService],
-  exports: [PgService]
+  exports: [PgService],
 })
 export class PgModule {}

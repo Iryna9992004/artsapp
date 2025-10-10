@@ -14,9 +14,7 @@ export class LoginUsecase {
   ) {}
 
   async exec(userAgent: string, user: User) {
-    const foundUser = await this.userRepositoryPostgres.findByEmail(
-      user.email,
-    );
+    const foundUser = await this.userRepositoryPostgres.findByEmail(user.email);
 
     if (!foundUser) {
       throw new BadRequestException('User with this email does not exist');
