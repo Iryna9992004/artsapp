@@ -2,6 +2,8 @@ import React from "react";
 import CreatePostForm from "@/components/features/create-post-form";
 import { Metadata } from "next";
 
+export const dynamic = "force-dynamic";
+
 export const metadata: Metadata = {
   title: "Create Post",
   description: "On this page you can create your own post",

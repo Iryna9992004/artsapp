@@ -4,6 +4,8 @@ import Tabbar from "@/components/widgets/tabbar";
 import { usePathname, useRouter } from "next/navigation";
 import React, { useEffect } from "react";
 
+export const dynamic = "force-dynamic";
+
 export default function ProtectedLayout({
   children,
 }: Readonly<{

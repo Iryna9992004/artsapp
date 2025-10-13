@@ -4,9 +4,10 @@ import { NextRequest, NextResponse } from "next/server";
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: { userSessionId: string } }
+  context: { params: Promise<{ userSessionId: string }> }
 ) {
   try {
+    const params = await context.params;
     const apiResponse = await $api.get(`/auth/refresh/${params.userSessionId}`);
     return NextResponse.json(
       { message: "Token refreshed successfuly", data: { ...apiResponse.data } },

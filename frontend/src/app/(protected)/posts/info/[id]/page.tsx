@@ -1,5 +1,7 @@
 import React from "react";
 
+export const dynamic = "force-dynamic";
+
 export default function Post() {
   return (
     <div className="p-6 pb-30 h-full max-h-[90vh] overflow-y-auto flex flex-col gap-6 bg-pink-800/20">
