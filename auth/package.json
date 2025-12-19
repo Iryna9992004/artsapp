@@ -21,7 +21,7 @@
   },
   "dependencies": {
     "@clickhouse/client": "^1.12.1",
-    "@depyronick/nestjs-clickhouse": "^2.0.5",
+    "@depyronick/nestjs-clickhouse": "^2.0.2",
     "@keyv/redis": "^5.1.1",
     "@nestjs-modules/ioredis": "^2.0.2",
     "@nestjs/cache-manager": "^3.0.1",

@@ -2,6 +2,9 @@ import * as dotenv from 'dotenv';
 dotenv.config();
 
 interface Config {
+  base: {
+    port: number;
+  };
   pg: {
     name: string;
     user: string;

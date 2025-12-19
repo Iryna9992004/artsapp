@@ -9,9 +9,6 @@ async function run() {
     password: process.env.PG_PASSWORD,
     host: process.env.PG_HOST,
     port: Number(process.env.PG_PORT),
-    ssl: {
-      rejectUnauthorized: false,
-    },
   };
 
   console.log("Connecting with config:", {

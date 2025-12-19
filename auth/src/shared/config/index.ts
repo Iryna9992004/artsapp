@@ -2,6 +2,9 @@ import * as dotenv from 'dotenv';
 dotenv.config();
 
 interface Config {
+  base: {
+    port: number;
+  };
   clickhouse: {
     host: string;
     username: string;
@@ -20,12 +23,20 @@ interface Config {
     port: number;
     type: string;
   };
+  redis: {
+    host: string;
+    port: number;
+    password: string;
+  };
   client: {
     base_url: string;
   };
 }
 
 const config: Config = {
+  base: {
+    port: Number(process.env.PORT) || 4000,
+  },
   clickhouse: {
     host: process.env.CLICKHOUSE_HOST,
     username: process.env.CLICKHOUSE_USER,
@@ -43,6 +54,11 @@ const config: Config = {
     host: process.env.PG_HOST,
     port: Number(process.env.PG_PORT),
     type: process.env.DB_TYPE,
+  },
+  redis: {
+    host: process.env.REDIS_HOST,
+    port: Number(process.env.REDIS_PORT),
+    password: process.env.REDIS_PASSWORD,
   },
   client: {
     base_url: process.env.CLIENT_BASE_URL,

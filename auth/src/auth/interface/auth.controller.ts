@@ -19,6 +19,7 @@ export class AuthController {
   async register(@Req() request: Request, @Res() response: Response) {
     const userSessionId = uuid.v4();
     const res = await this.registerUsecase.exec(userSessionId, request.body);
+    console.log('res', res);
     return response.json({ ...res.user, userSessionId });
   }
 
