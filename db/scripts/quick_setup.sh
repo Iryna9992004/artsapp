@@ -77,3 +77,4 @@ echo "   - ClickHouse CLI:  docker exec -it clickhouse clickhouse-client"
 echo ""
 echo "📖 Детальна документація: db/REPLICATION_SETUP.md"
 
+
