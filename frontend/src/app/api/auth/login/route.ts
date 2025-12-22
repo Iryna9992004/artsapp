@@ -1,4 +1,4 @@
-import { $api } from "@/shared/api";
+import { $api } from "@/shared/api/axios";
 import { AxiosError } from "axios";
 import { NextRequest, NextResponse } from "next/server";
 

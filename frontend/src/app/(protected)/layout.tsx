@@ -29,6 +29,9 @@ export default function ProtectedLayout({
         });
         if (!response.ok) {
           router.replace("/login");
+        } else {
+          const data = await response.json();
+          localStorage.setItem("user_id", data?.data?.user?.id);
         }
       } catch (e) {
         router.replace("/login");

@@ -9,7 +9,6 @@ export class RefreshUsecase {
 
   async execute(userSessionId: string) {
     const foundSession = await this.redisService.getValue(userSessionId);
-    console.log(foundSession);
     if (!foundSession) {
       throw new UnauthorizedException('Session expired');
     }
@@ -21,19 +20,20 @@ export class RefreshUsecase {
     }
 
     const { id, full_name, email } = decodedToken;
+
     const accessToken = jwt.sign(
       { id, full_name, email },
       config.jwt.access_secret,
       { expiresIn: '15m' },
     );
     const refreshToken = jwt.sign(
-      { ...id, full_name, email },
+      { id, full_name, email },
       config.jwt.refresh_secret,
       { expiresIn: '2h' },
     );
 
     await this.redisService.setValue(userSessionId, refreshToken);
 
-    return { accessToken, userSessionId };
+    return { accessToken, userSessionId, user: { id, full_name, email } };
   }
 }

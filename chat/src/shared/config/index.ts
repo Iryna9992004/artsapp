@@ -19,6 +19,9 @@ interface Config {
 }
 
 const config: Config = {
+  base: {
+    port: Number(process.env.PORT),
+  },
   pg: {
     name: process.env.PG_NAME,
     user: process.env.PG_USER,

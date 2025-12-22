@@ -6,6 +6,7 @@ import { useForm } from "react-hook-form";
 import { CreateTopicFormInputs } from "./inputs";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { createTopicFormvalidationSchema } from "./schema";
+import { useCreateTopic } from "@/shared/hooks/topic/useCreateTopic";
 
 export default function CreateTopicForm() {
   const {
@@ -22,6 +23,8 @@ export default function CreateTopicForm() {
   const submit = () => {
     if (!isValid) return;
   };
+
+  //const { createTopic } = useCreateTopic(user_id);
 
   return (
     <form
