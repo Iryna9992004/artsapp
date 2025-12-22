@@ -7,11 +7,13 @@ import { CreateTopicFormInputs } from "./inputs";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { createTopicFormvalidationSchema } from "./schema";
 import { useCreateTopic } from "@/shared/hooks/topic/useCreateTopic";
+import { useUserId } from "@/shared/hooks/user/useUserId";
 
 export default function CreateTopicForm() {
   const {
     register,
     handleSubmit,
+    getValues,
     formState: { errors, isValid },
   } = useForm<CreateTopicFormInputs>({
     resolver: zodResolver(createTopicFormvalidationSchema),
@@ -19,12 +21,15 @@ export default function CreateTopicForm() {
       topic: "",
     },
   });
+  const { userId } = useUserId();
+  const { createTopic } = useCreateTopic(userId);
 
-  const submit = () => {
+  const submit = async () => {
     if (!isValid) return;
-  };
 
-  //const { createTopic } = useCreateTopic(user_id);
+    const topic = getValues("topic");
+    await createTopic(topic);
+  };
 
   return (
     <form

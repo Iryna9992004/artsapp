@@ -1,4 +1,5 @@
 "use client";
+import Toast from "@/components/ui/toast";
 import Navbar from "@/components/widgets/navbar";
 import Tabbar from "@/components/widgets/tabbar";
 import { usePathname, useRouter } from "next/navigation";
