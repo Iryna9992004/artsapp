@@ -1,3 +1,4 @@
-export interface EventsListProps {
+export interface TopicsListProps {
   searchText?: string;
+  wasCleared?: boolean;
 }

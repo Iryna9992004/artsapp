@@ -1,11 +1,11 @@
 "use client";
 import FeedMessage from "@/components/entities/feed-message";
 import React, { useState } from "react";
-import { EventsListProps } from "./types";
+import { TopicsListProps } from "./types";
 import { useOnInView } from "react-intersection-observer";
 import { useTopics } from "@/shared/hooks/topic/useTopics";
 
-export default function EventsList({ searchText }: EventsListProps) {
+export default function TopicsList({ searchText }: TopicsListProps) {
   const [lastIndex, setLastIndex] = useState(0);
   const { isLoading, topics, hasMore } = useTopics(lastIndex, 10, searchText);
 

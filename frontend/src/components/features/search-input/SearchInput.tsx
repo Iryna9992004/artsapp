@@ -4,11 +4,13 @@ import React from "react";
 import { useForm } from "react-hook-form";
 import { searchInputValidationSchema } from "./schema";
 import { SearchInputFormInputs } from "./inputs";
+import { SearchInputProps } from "./types";
 
-export default function SearchInput() {
+export default function SearchInput({ setValue }: SearchInputProps) {
   const {
     register,
     handleSubmit,
+    setValue: set,
     getValues,
     formState: { isValid },
   } = useForm<SearchInputFormInputs>({
@@ -20,6 +22,8 @@ export default function SearchInput() {
 
   const submit = () => {
     if (!isValid) return;
+    const value = getValues("text");
+    setValue(value);
   };
   return (
     <div className="sticky top-0 left-0 right-0 py-2 px-6 w-full flex justify-center bg-black/80 z-1000">

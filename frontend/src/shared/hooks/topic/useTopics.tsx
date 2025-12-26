@@ -22,14 +22,31 @@ export function useTopics(
   async function fetch() {
     setIsLoading(true);
     try {
-      const response = await fetchTopics(limit, offset, searchText);
-      if (response.length === 10) {
-        setHasMore(true);
+      if (searchText && searchText?.length > 0) {
+        const response = await fetchTopics(limit, offset, searchText);
+        if (response.length === 10) {
+          setHasMore(true);
+        } else {
+          setHasMore(false);
+        }
+        setTopics([...response]);
+      } else if (searchText === "") {
+        const response = await fetchTopics(limit, offset, searchText);
+        if (response.length === 10) {
+          setHasMore(true);
+        } else {
+          setHasMore(false);
+        }
+        setTopics([...response]);
       } else {
-        setHasMore(false);
+        const response = await fetchTopics(limit, offset);
+        if (response.length === 10) {
+          setHasMore(true);
+        } else {
+          setHasMore(false);
+        }
+        setTopics((prev) => [...prev, ...response]);
       }
-      setTopics((prev) => [...prev, ...response]);
-      return response;
     } catch (e) {
       if (e instanceof AxiosError) {
         toast.error(e.response?.data.message);
@@ -42,7 +59,7 @@ export function useTopics(
 
   useEffect(() => {
     fetch();
-  }, [offset, limit]);
+  }, [offset, limit, searchText]);
 
   return { isLoading, fetch, topics, hasMore };
 }
