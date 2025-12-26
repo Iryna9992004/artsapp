@@ -65,6 +65,7 @@ else
   docker exec -i postgres psql -U postgres -d artsapp < db/migrations/3_create_message_table.sql 2>/dev/null || true
   docker exec -i postgres psql -U postgres -d artsapp < db/migrations/4_create_topic_read.sql 2>/dev/null || true
   docker exec -i postgres psql -U postgres -d artsapp < db/migrations/5_message_reads_table.sql 2>/dev/null || true
+  docker exec -i postgres psql -U postgres -d artsapp < db/migrations/6_create_events_table.sql 2>/dev/null || true
 fi
 
 # 7. Перевірка таблиць
@@ -103,7 +104,7 @@ CREATE DATABASE artsapp_sync
 ENGINE = MaterializedPostgreSQL('$PG_IP:5432', 'artsapp', 'postgres', '1111')
 SETTINGS 
     materialized_postgresql_schema = 'public',
-    materialized_postgresql_tables_list = 'users,topics,messages,topic_reads,message_reads';" 2>&1
+    materialized_postgresql_tables_list = 'users,topics,messages,topic_reads,message_reads,events';" 2>&1
 
 # 12. Очікування синхронізації
 echo "1️⃣2️⃣  Очікування синхронізації (10 секунд)..."
@@ -141,6 +142,7 @@ FROM (
     UNION ALL SELECT 'messages' FROM artsapp_sync.messages
     UNION ALL SELECT 'topic_reads' FROM artsapp_sync.topic_reads
     UNION ALL SELECT 'message_reads' FROM artsapp_sync.message_reads
+    UNION ALL SELECT 'events' FROM artsapp_sync.events
 ) GROUP BY table
 FORMAT PrettyCompact;" 2>/dev/null || echo "Таблиці порожні (це нормально якщо немає даних)"
 
@@ -152,3 +154,4 @@ echo "   - Перевірка таблиць: docker exec clickhouse clickhouse-
 echo "   - Підключення до PostgreSQL: docker exec -it postgres psql -U postgres -d artsapp"
 echo "   - Підключення до ClickHouse: docker exec -it clickhouse clickhouse-client"
 
+docker exec clickhouse clickhouse-client --query "SELECT * from events;"
