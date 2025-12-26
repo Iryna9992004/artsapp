@@ -40,9 +40,8 @@ export default function RegisterForm() {
     });
     const result = await response.json();
     if (response.status === 200) {
-      console.log(result.userSessionId);
       localStorage.setItem("userSessionId", result.userSessionId);
-      router.replace("/feed");
+      router.replace("/login");
     } else {
       toast.error(result.message);
     }

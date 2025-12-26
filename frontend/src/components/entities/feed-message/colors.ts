@@ -1,4 +1,11 @@
 export const colors = {
+  "0": {
+    border:
+      "bg-gradient-to-r from-[#E8C3A9] via-[#DC7938] to-[#FF45EC] shadow-lg shadow-[#B74B0A]/30",
+    bg: "bg-gradient-to-r from-[#BB977F] via-[#B64510] to-[#B636A3]",
+    leftCorner: "border-b-[#E8C3A9]",
+    rightCorner: "border-b-[#FF45EC]",
+  },
   "1": {
     border:
       "bg-gradient-to-r from-[#1E25B1] to-[#734AD7] shadow-lg shadow-[#734AD7]/30",

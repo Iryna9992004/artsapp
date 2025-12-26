@@ -7,3 +7,7 @@ export const $api = axios.create({
 export const $apiChat = axios.create({
   baseURL: process.env.chatApiUrl,
 });
+
+export const $apiFetch = axios.create({
+  baseURL: process.env.fetchApi,
+});
