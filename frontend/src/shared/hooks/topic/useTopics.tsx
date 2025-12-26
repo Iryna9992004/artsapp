@@ -45,7 +45,12 @@ export function useTopics(
         } else {
           setHasMore(false);
         }
-        setTopics((prev) => [...prev, ...response]);
+
+        if (offset === 0) {
+          setTopics([...response]);
+        } else {
+          setTopics((prev) => [...prev, ...response]);
+        }
       }
     } catch (e) {
       if (e instanceof AxiosError) {

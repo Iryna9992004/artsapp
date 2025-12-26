@@ -1,6 +1,6 @@
 "use client";
 import FeedMessage from "@/components/entities/feed-message";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { TopicsListProps } from "./types";
 import { useOnInView } from "react-intersection-observer";
 import { useTopics } from "@/shared/hooks/topic/useTopics";
@@ -20,6 +20,10 @@ export default function TopicsList({ searchText }: TopicsListProps) {
       triggerOnce: false,
     }
   );
+
+  useEffect(() => {
+    setLastIndex(0);
+  }, [searchText]);
 
   return (
     <div>
