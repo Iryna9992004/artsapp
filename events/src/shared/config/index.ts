@@ -12,6 +12,9 @@ export interface Config {
     password: string;
     port: number;
   };
+  frontend: {
+    url: string;
+  };
 }
 
 export const config: Config = {
@@ -24,5 +27,8 @@ export const config: Config = {
     name: process.env.PG_NAME || '',
     password: process.env.PG_PASSWORD || '',
     port: Number(process.env.PG_PORT),
+  },
+  frontend: {
+    url: process.env.FRONTEND_URL || '',
   },
 };

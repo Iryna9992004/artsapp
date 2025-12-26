@@ -1,5 +1,4 @@
 "use client";
-
 import Input from "@/components/ui/input";
 import React, { useState } from "react";
 import { useForm } from "react-hook-form";
@@ -9,26 +8,33 @@ import TextArea from "@/components/ui/text-area/TextArea";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { createEventFormvalidationSchema } from "./schema";
 import DragAndDrop from "@/components/ui/drag-and-drop";
+import { useUserId } from "@/shared/hooks/user/useUserId";
+import { useCreateEvent } from "@/shared/hooks/events/useCreateEvent";
 
 export default function CreateEventForm() {
   const {
     register,
     handleSubmit,
+    getValues,
     formState: { errors, isValid, isSubmitted },
   } = useForm<CreateEventFormInputs>({
     resolver: zodResolver(createEventFormvalidationSchema),
+    mode: "onChange",
     defaultValues: {
-      theme: "",
       title: "",
       description: "",
     },
   });
 
   const [file, setFile] = useState<File | null | undefined>(undefined);
+  const { userId } = useUserId();
+  const { create } = useCreateEvent(userId);
 
-  const submit = () => {
+  const submit = async () => {
     if (!file) return;
-    if (!isValid) return;
+    const title = getValues("title");
+    const description = getValues("description");
+    await create(title, description);
   };
 
   return (
@@ -46,11 +52,6 @@ export default function CreateEventForm() {
           errorMessage={isSubmitted && !file ? "File is required" : null}
         />
         <Input
-          register={register("theme")}
-          placeholder="Write the theme of your event"
-          errorMessage={errors.theme?.message}
-        />
-        <Input
           register={register("title")}
           placeholder="Write a title of title"
           errorMessage={errors.title?.message}
@@ -61,7 +62,7 @@ export default function CreateEventForm() {
           errorMessage={errors.description?.message}
         />
 
-        <Button text="Publish Event" />
+        <Button text="Publish Event" type="submit" />
       </form>
     </div>
   );
