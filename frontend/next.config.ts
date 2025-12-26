@@ -9,6 +9,16 @@ const nextConfig: NextConfig = {
     fetchApi: process.env.NEXT_PUBLIC_FETCH_API_URL,
     eventApi: process.env.NEXT_PUBLIC_EVENTS_API_URL,
   },
+  images: {
+    remotePatterns: [
+      {
+        protocol: "https",
+        hostname: "png.pngtree.com",
+        port: "",
+        pathname: "/**",
+      },
+    ],
+  },
 };
 
 export default nextConfig;

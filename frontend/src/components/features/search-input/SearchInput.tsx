@@ -10,7 +10,6 @@ export default function SearchInput({ setValue }: SearchInputProps) {
   const {
     register,
     handleSubmit,
-    setValue: set,
     getValues,
     formState: { isValid },
   } = useForm<SearchInputFormInputs>({

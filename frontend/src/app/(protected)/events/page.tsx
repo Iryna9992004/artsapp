@@ -1,4 +1,5 @@
 "use client";
+import EventsList from "@/components/features/events-list";
 import SearchInput from "@/components/features/search-input";
 import React, { useState } from "react";
 
@@ -9,6 +10,7 @@ export default function Events() {
   return (
     <div className="pb-30 flex justify-center flex-wrap items-center max-h-[90vh] overflow-y-auto gap-4">
       <SearchInput setValue={setSearchText} />
+      <EventsList searchText={searchText} />
     </div>
   );
 }
