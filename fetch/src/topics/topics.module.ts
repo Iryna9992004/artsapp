@@ -3,9 +3,10 @@ import { TopicRepositoryClickhouse } from './infrastructure/repos/topics.reposit
 import { SearchTopicUsecase } from './application/searchTopics.usecase';
 import { TopicsController } from './interface/topics.controller';
 import { ClickhouseModule } from 'src/clickhouse/clickhouse.module';
+import { FetchTopicUsecase } from './application/fetchTopic.usecase';
 
 @Module({
-  providers: [TopicRepositoryClickhouse, SearchTopicUsecase],
+  providers: [TopicRepositoryClickhouse, SearchTopicUsecase, FetchTopicUsecase],
   controllers: [TopicsController],
   imports: [ClickhouseModule],
 })

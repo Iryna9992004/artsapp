@@ -54,4 +54,21 @@ export class TopicRepositoryClickhouse implements TopicRepository {
       throw e;
     }
   }
+
+  async getTopicById(topic_id: number): Promise<Topic> {
+    try {
+      const rows = await this.clickhouseService.getConfig().query({
+        query: `SELECT *
+              FROM ${config.db.name}.topics
+              WHERE id = ${topic_id}
+              ORDER BY id`,
+        format: 'JSONEachRow',
+      });
+      const topic = await rows.json<Topic>();
+      return topic[0];
+    } catch (e) {
+      console.error(e);
+      throw e;
+    }
+  }
 }
