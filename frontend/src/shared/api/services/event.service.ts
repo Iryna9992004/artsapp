@@ -14,6 +14,7 @@ export async function createEvent(
     return response.data;
   } catch (e) {
     console.error(e);
+    throw e;
   }
 }
 
@@ -37,5 +38,6 @@ export async function fetchEvents(
     return response.data;
   } catch (e) {
     console.error(e);
+    throw e;
   }
 }

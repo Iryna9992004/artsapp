@@ -1,11 +1,11 @@
 import { useEffect, useState } from "react";
 
 export function useUserId() {
-  const [userId, setUserId] = useState("");
+  const [userId, setUserId] = useState<number>();
 
   useEffect(() => {
     const user_id = localStorage.getItem("user_id");
-    setUserId(user_id ?? "");
+    setUserId(Number(user_id) ?? 0);
   }, []);
 
   return { userId };

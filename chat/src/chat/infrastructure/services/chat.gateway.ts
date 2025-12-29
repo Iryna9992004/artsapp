@@ -10,7 +10,13 @@ import { CreateMessageUsecase } from 'src/chat/application/create.message.usecas
 import { GetMessagesUsecase } from 'src/chat/application/get.messages.usecase';
 import { ReadMessageUsecase } from 'src/chat/application/read.message.usecase';
 
-@WebSocketGateway({ namespace: 'chat' })
+@WebSocketGateway({
+  cors: {
+    origin: ['http://localhost:3000'],
+    methods: ['GET', 'POST', 'PUT', 'DELETE'],
+    credentials: true,
+  },
+})
 export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
   @WebSocketServer()
   private server: Server;
@@ -18,16 +24,14 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
   constructor(
     private readonly createMessageUsecase: CreateMessageUsecase,
     private readonly readMessageUsecase: ReadMessageUsecase,
-    private readonly getMessagesUsecase: GetMessagesUsecase
+    private readonly getMessagesUsecase: GetMessagesUsecase,
   ) {}
 
   handleConnection(client: Socket, ...args: any[]) {
-    console.log(client.id);
     return { client };
   }
 
   handleDisconnect(client: Socket) {
-    console.log(client.id);
     return { client };
   }
 
@@ -81,9 +85,9 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
   @SubscribeMessage('get')
   async getMessages(client: Socket, data: { topic_id: number }) {
     try {
-      const {topic_id} = data;
-      const messages = await this.getMessagesUsecase.execute(topic_id)
-      return {status: "success", data: messages}
+      const { topic_id } = data;
+      const messages = await this.getMessagesUsecase.execute(topic_id);
+      return { status: 'success', data: messages };
     } catch (e) {
       console.log(e);
       return { status: 'error', data: e };

@@ -6,6 +6,7 @@ export async function createTopicService(text: string, user_id: string) {
     return response.data;
   } catch (e) {
     console.error(e);
+    throw e;
   }
 }
 
@@ -28,5 +29,6 @@ export async function fetchTopics(
     }
   } catch (e) {
     console.error(e);
+    throw e;
   }
 }
