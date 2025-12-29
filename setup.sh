@@ -156,4 +156,4 @@ echo "   - Перевірка таблиць: docker exec clickhouse clickhouse-
 echo "   - Підключення до PostgreSQL: docker exec -it postgres psql -U postgres -d artsapp"
 echo "   - Підключення до ClickHouse: docker exec -it clickhouse clickhouse-client"
 
-docker exec clickhouse clickhouse-client --query "SELECT * from events;"
+docker exec clickhouse clickhouse-client --query "SELECT * from artsapp_sync.events;"
