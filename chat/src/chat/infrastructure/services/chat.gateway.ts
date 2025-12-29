@@ -9,10 +9,11 @@ import { Server, Socket } from 'socket.io';
 import { CreateMessageUsecase } from 'src/chat/application/create.message.usecase';
 import { GetMessagesUsecase } from 'src/chat/application/get.messages.usecase';
 import { ReadMessageUsecase } from 'src/chat/application/read.message.usecase';
+import config from 'src/shared/config';
 
 @WebSocketGateway({
   cors: {
-    origin: ['http://localhost:3000'],
+    origin: [config.client.base_url],
     methods: ['GET', 'POST', 'PUT', 'DELETE'],
     credentials: true,
   },
@@ -46,7 +47,6 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
   ) {
     try {
       const { text, topic_id, user_id } = data;
-      console.log('=--=received data', data);
       const sentMessage = await this.createMessageUsecase.exec(
         text,
         topic_id,
@@ -83,10 +83,10 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
   }
 
   @SubscribeMessage('get')
-  async getMessages(client: Socket, data: { topic_id: number }) {
+  async getMessages(client: Socket, data: { chat_id: number }) {
     try {
-      const { topic_id } = data;
-      const messages = await this.getMessagesUsecase.execute(topic_id);
+      const { chat_id } = data;
+      const messages = await this.getMessagesUsecase.execute(chat_id);
       return { status: 'success', data: messages };
     } catch (e) {
       console.log(e);

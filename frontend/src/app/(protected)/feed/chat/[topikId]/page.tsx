@@ -36,8 +36,10 @@ export default function Page() {
   const { isLoading: isReading, read } = useReadMessage(userId ?? 0);
 
   const sendMessage1 = async () => {
+    console.log("-=--", topikId, userId);
     console.log("here");
-    await read(6);
+    await send("dscscdsdc csdsdcsdccsd csdscd");
+    console.log("messages", messages);
   };
 
   const submit = () => {
@@ -46,9 +48,12 @@ export default function Page() {
 
   return (
     <div className="p-2 max-h-[90vh] overflow-y-auto pb-20">
-      <form onSubmit={handleSubmit(submit)}>
+      {/* <form onSubmit={handleSubmit(submit)}>
         <SendForm register={register("text")} value={getValues("text")} />
-      </form>
+      </form> */}
+      <button onClick={sendMessage1} className="bg-red-300">
+        Click
+      </button>
     </div>
   );
 }
