@@ -4,6 +4,7 @@ import React, { useEffect, useState } from "react";
 import { TopicsListProps } from "./types";
 import { useOnInView } from "react-intersection-observer";
 import { useTopics } from "@/shared/hooks/topic/useTopics";
+import Loader from "@/components/ui/loader";
 
 export default function TopicsList({ searchText }: TopicsListProps) {
   const [lastIndex, setLastIndex] = useState(0);
@@ -25,6 +26,14 @@ export default function TopicsList({ searchText }: TopicsListProps) {
     setLastIndex(0);
   }, [searchText]);
 
+  if (isLoading && topics.length === 0) {
+    return (
+      <div className="flex items-center justify-center min-h-[400px]">
+        <Loader size="lg" />
+      </div>
+    );
+  }
+
   return (
     <div>
       {topics.map((item) => (
@@ -37,6 +46,11 @@ export default function TopicsList({ searchText }: TopicsListProps) {
           colorNumber={item.id % 10}
         />
       ))}
+      {isLoading && topics.length > 0 && (
+        <div className="flex items-center justify-center py-8">
+          <Loader />
+        </div>
+      )}
       <div ref={trackingRef} className="h-10 w-full" />
     </div>
   );

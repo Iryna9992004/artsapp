@@ -28,7 +28,7 @@ export default function CreateEventForm() {
 
   const [file, setFile] = useState<File | null | undefined>(undefined);
   const { userId } = useUserId();
-  const { create } = useCreateEvent(userId);
+  const { create, isLoading } = useCreateEvent(userId);
 
   const submit = async () => {
     if (!file) return;
@@ -50,19 +50,22 @@ export default function CreateEventForm() {
           value={file as never}
           setValue={setFile}
           errorMessage={isSubmitted && !file ? "File is required" : null}
+          disabled={isLoading}
         />
         <Input
           register={register("title")}
           placeholder="Write a title of title"
           errorMessage={errors.title?.message}
+          disabled={isLoading}
         />
         <TextArea
           register={register("description")}
           placeholder="Write a description of event"
           errorMessage={errors.description?.message}
+          disabled={isLoading}
         />
 
-        <Button text="Publish Event" type="submit" />
+        <Button text={isLoading ? "Publishing..." : "Publish Event"} type="submit" disabled={isLoading} />
       </form>
     </div>
   );

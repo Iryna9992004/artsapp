@@ -4,4 +4,5 @@ export interface TextAreaProps {
   placeholder: string;
   register: UseFormRegisterReturn;
   errorMessage?: string;
+  disabled?: boolean;
 }

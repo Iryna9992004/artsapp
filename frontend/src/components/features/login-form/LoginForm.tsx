@@ -8,6 +8,7 @@ import { loginFormvalidationSchema } from "./schema";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useRouter } from "next/navigation";
 import { toast } from "react-toastify";
+import { useState } from "react";
 
 export default function LoginForm() {
   const {
@@ -23,22 +24,28 @@ export default function LoginForm() {
   });
 
   const router = useRouter();
+  const [isLoading, setIsLoading] = useState(false);
 
   const submit = async (data: LoginFormInputs) => {
     if (!isValid) return;
-    const response = await fetch("/api/auth/login", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ ...data }),
-    });
-    const result = await response.json();
-    if (response.ok) {
-      localStorage.setItem("userSessionId", result.data.userSessionId);
-      router.replace("/feed");
-    } else {
-      toast.error(result.message);
+    setIsLoading(true);
+    try {
+      const response = await fetch("/api/auth/login", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ ...data }),
+      });
+      const result = await response.json();
+      if (response.ok) {
+        localStorage.setItem("userSessionId", result.data.userSessionId);
+        router.replace("/feed");
+      } else {
+        toast.error(result.message);
+      }
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -53,16 +60,18 @@ export default function LoginForm() {
             placeholder="Write your email"
             register={register("email")}
             errorMessage={errors.email?.message}
+            disabled={isLoading}
           />
           <Input
             placeholder="Write your password"
             register={register("password")}
             type="password"
             errorMessage={errors.password?.message}
+            disabled={isLoading}
           />
         </div>
 
-        <Button text="Login" type="submit" />
+        <Button text={isLoading ? "Logging in..." : "Login"} type="submit" disabled={isLoading} />
       </form>
       <div className="text-center text-gray-300 font-bold">
         Don`t` have an account?{" "}

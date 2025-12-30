@@ -22,7 +22,7 @@ export default function CreateTopicForm() {
     },
   });
   const { userId } = useUserId();
-  const { createTopic } = useCreateTopic(userId);
+  const { createTopic, isLoading } = useCreateTopic(userId);
 
   const submit = async () => {
     if (!isValid) return;
@@ -43,8 +43,9 @@ export default function CreateTopicForm() {
         register={register("topic")}
         placeholder="Write a topic"
         errorMessage={errors.topic?.message}
+        disabled={isLoading}
       />
-      <Button text="Publish Topic" />
+      <Button text={isLoading ? "Publishing..." : "Publish Topic"} disabled={isLoading} />
     </form>
   );
 }

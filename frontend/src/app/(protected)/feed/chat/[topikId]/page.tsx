@@ -10,6 +10,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useParams } from "next/navigation";
 import React from "react";
 import { useForm } from "react-hook-form";
+import Loader from "@/components/ui/loader";
 
 export const dynamic = "force-dynamic";
 
@@ -42,11 +43,19 @@ export default function Page() {
     setValue("text", "");
   };
 
+  if (isLoadingMessages && messages.length === 0) {
+    return (
+      <div className="p-2 max-h-[90vh] flex items-center justify-center min-h-[400px]">
+        <Loader size="lg" />
+      </div>
+    );
+  }
+
   return (
     <div className="p-2 max-h-[90vh] overflow-y-auto">
       <MessagesList data={messages} />
       <form onSubmit={handleSubmit(submit)}>
-        <SendForm register={register("text")} value={getValues("text")} />
+        <SendForm register={register("text")} value={getValues("text")} disabled={isSending} />
       </form>
     </div>
   );

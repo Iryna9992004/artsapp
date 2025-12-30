@@ -6,10 +6,12 @@ export default function DragAndDrop({
   value,
   setValue,
   errorMessage,
+  disabled,
 }: DragAndPropsProps) {
   const inputRef = useRef<HTMLInputElement>(null);
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (disabled) return;
     const files = e.target.files;
     if (!files || files.length === 0) {
       return;
@@ -27,10 +29,11 @@ export default function DragAndDrop({
       <input
         ref={inputRef}
         type="file"
-        className="w-full h-50 cursor-pointer"
+        className="w-full h-50 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
         onChange={handleFileChange}
+        disabled={disabled}
       />
-      <div className="absolute top-0 bottom-0 left-0 right-0 pointer-events-none p-5 rounded-3xl bg-[#20232B] h-50 border border-gray-600 hover:border-white">
+      <div className={`absolute top-0 bottom-0 left-0 right-0 pointer-events-none p-5 rounded-3xl bg-[#20232B] h-50 border border-gray-600 ${disabled ? "opacity-50" : "hover:border-white"}`}>
         <div className="w-full h-full bg-[#2F2F2F] rounded-lg flex flex-col items-center justify-center border-2 border-dashed border-gray-600">
           <span className="text-xl text-white font-bold">Drag and Drop</span>
           <span className="text-md text-gray-300 font-medium">

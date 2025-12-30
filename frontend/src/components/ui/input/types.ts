@@ -4,4 +4,5 @@ export interface InputProps {
   register: UseFormRegisterReturn<string>;
   type?: "password" | "text";
   errorMessage?: string;
+  disabled?: boolean;
 }

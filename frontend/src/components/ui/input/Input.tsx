@@ -8,6 +8,7 @@ export default function Input({
   type,
   errorMessage,
   register,
+  disabled,
 }: InputProps) {
   const [showPassword, setShowPassword] = useState(false);
   const isPassword = type === "password";
@@ -19,8 +20,9 @@ export default function Input({
           isPassword ? (showPassword ? "text" : "password") : (type ?? "text")
         }
         placeholder={placeholder}
-        className="bg-[#2F2F2F] border border-gray-600 px-5 py-3 placeholder-gray-300 rounded-full outline-none w-full caret-white focus:border-white text-white pr-14"
+        className="bg-[#2F2F2F] border border-gray-600 px-5 py-3 placeholder-gray-300 rounded-full outline-none w-full caret-white focus:border-white text-white pr-14 disabled:opacity-50 disabled:cursor-not-allowed"
         {...register}
+        disabled={disabled}
       />
       {isPassword && (
         <button

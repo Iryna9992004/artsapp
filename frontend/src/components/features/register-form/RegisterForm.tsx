@@ -2,7 +2,7 @@
 import Button from "@/components/ui/button";
 import Input from "@/components/ui/input/Input";
 import Link from "next/link";
-import React from "react";
+import React, { useState } from "react";
 import { RegisterFormInputs } from "./inputs";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -26,24 +26,29 @@ export default function RegisterForm() {
   });
 
   const router = useRouter();
+  const [isLoading, setIsLoading] = useState(false);
 
   const submit = async (data: RegisterFormInputs) => {
     if (!isValid) return;
-
-    const response = await fetch("/api/auth/register", {
-      method: "POST",
-      credentials: "include",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ ...data }),
-    });
-    const result = await response.json();
-    if (response.status === 200) {
-      localStorage.setItem("userSessionId", result.userSessionId);
-      router.replace("/login");
-    } else {
-      toast.error(result.message);
+    setIsLoading(true);
+    try {
+      const response = await fetch("/api/auth/register", {
+        method: "POST",
+        credentials: "include",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ ...data }),
+      });
+      const result = await response.json();
+      if (response.status === 200) {
+        localStorage.setItem("userSessionId", result.userSessionId);
+        router.replace("/login");
+      } else {
+        toast.error(result.message);
+      }
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -58,26 +63,30 @@ export default function RegisterForm() {
             placeholder="Write your full name"
             register={register("full_name")}
             errorMessage={errors.full_name?.message}
+            disabled={isLoading}
           />
           <Input
             placeholder="Write your occupation"
             register={register("occupation")}
             errorMessage={errors.occupation?.message}
+            disabled={isLoading}
           />
           <Input
             placeholder="Write your email"
             register={register("email")}
             errorMessage={errors.email?.message}
+            disabled={isLoading}
           />
           <Input
             placeholder="Write your password"
             register={register("password")}
             errorMessage={errors.password?.message}
             type="password"
+            disabled={isLoading}
           />
         </div>
 
-        <Button text="Register" type="submit" />
+        <Button text={isLoading ? "Registering..." : "Register"} type="submit" disabled={isLoading} />
       </form>
       <div className="text-center text-gray-300 font-bold">
         Already have an account?{" "}
