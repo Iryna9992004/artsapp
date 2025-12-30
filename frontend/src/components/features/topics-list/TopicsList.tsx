@@ -30,6 +30,7 @@ export default function TopicsList({ searchText }: TopicsListProps) {
       {topics.map((item) => (
         <FeedMessage
           key={item.id}
+          id={item.id}
           text={item.text}
           timestamp={item.created_at}
           author={item.author_name}

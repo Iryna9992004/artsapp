@@ -7,13 +7,12 @@ import { FeedMessageProps } from "./types";
 import { useRouter } from "next/navigation";
 
 const FeedMessage: React.FC<FeedMessageProps> = ({
+  id,
   text,
   timestamp,
   author,
-  messagesCount = 0,
   colorNumber = "1",
 }) => {
-  const [repliesOpened, setRepliesOpened] = useState(false);
   const router = useRouter();
 
   const getColorConfig = (colorNum: string | number) => {
@@ -26,15 +25,12 @@ const FeedMessage: React.FC<FeedMessageProps> = ({
   const pushToChat = (e: Event) => {
     e.preventDefault();
     e.stopPropagation();
-    router.push(`/feed/chat/1?title=${encodeURIComponent(text)}`);
+    router.push(`/feed/chat/${id}?title=${encodeURIComponent(text)}`);
   };
 
   return (
     <div className={`w-full flex ${author ? "justify-end" : "justify-start"}`}>
-      <div
-        className="relative flex justify-end mb-4 px-4 min-w-80 w-[30%] max-w-[45%] cursor-pointer"
-        onClick={() => setRepliesOpened(!repliesOpened)}
-      >
+      <div className="relative flex justify-end mb-4 px-4 min-w-80 w-[30%] max-w-[45%] cursor-pointer">
         <div className="w-full">
           <div
             className={`${
@@ -58,26 +54,10 @@ const FeedMessage: React.FC<FeedMessageProps> = ({
 
                 <div className="flex gap-2 items-center">
                   <div className="text-gray-200 flex items-center gap-1">
-                    <span className="text-xs">{messagesCount}</span>
                     <MessageSquare className="w-4" />
                   </div>
                 </div>
               </div>
-
-              {repliesOpened ? (
-                <div className="flex flex-col gap-1 w-full pt-2">
-                  <FeedReply
-                    onClick={pushToChat}
-                    author="Username"
-                    text="vdsvssvdvd"
-                  />
-                  <FeedReply
-                    onClick={pushToChat}
-                    author="Username"
-                    text="vdsvssvdvd"
-                  />
-                </div>
-              ) : null}
             </div>
           </div>
         </div>

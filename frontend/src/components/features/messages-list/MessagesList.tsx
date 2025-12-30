@@ -26,6 +26,13 @@ export default function MessagesList({ data }: MessageListProps) {
 
   return (
     <div ref={messagesListRef} className="overflow-y-auto pb-20">
+      {data.length === 0 ? (
+        <div className="h-[80vh] w-full flex items-center justify-center">
+          <strong className="text-white">No messages</strong>
+        </div>
+      ) : (
+        0
+      )}
       {data.map((item) => (
         <ChatMessage
           key={item.id}
