@@ -25,8 +25,6 @@ export default function EventsList({ searchText }: EventsListProps) {
     }
   );
 
-  console.log("events", events);
-
   useEffect(() => {
     setLastIndex(0);
   }, [searchText]);

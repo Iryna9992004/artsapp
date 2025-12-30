@@ -1,9 +1,11 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { ChatMessageProps } from "./types";
 import { colors } from "./colors";
 import { useUserId } from "@/shared/hooks/user/useUserId";
+import { useReadMessage } from "@/shared/hooks/messages/useReadMessage";
 
 const ChatMessage: React.FC<ChatMessageProps> = ({
+  id,
   text,
   timestamp,
   status,
@@ -11,65 +13,65 @@ const ChatMessage: React.FC<ChatMessageProps> = ({
   colorNumber,
   user_id,
 }) => {
-  const { user_id: current_user_id } = useUserId();
+  const { userId } = useUserId();
+  const { isLoading, read } = useReadMessage();
 
   const getStatusIcon = () => {
-    switch (status) {
-      case "sent":
-        return (
-          <svg
-            width="16"
-            height="16"
-            viewBox="0 0 24 24"
-            fill="none"
-            className="text-gray-400"
-          >
-            <path
-              d="M9 16.17L5.83 13l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z"
-              fill="currentColor"
-            />
-          </svg>
-        );
-      case "delivered":
-        return (
-          <svg
-            width="16"
-            height="16"
-            viewBox="0 0 24 24"
-            fill="none"
-            className="text-gray-300"
-          >
-            <path
-              d="M16.59 7.58L10 14.17L7.41 11.58L6 13L10 17L18 9L16.59 7.58Z"
-              fill="currentColor"
-            />
-            <path
-              d="M21.59 7.58L15 14.17L12.41 11.58L11 13L15 17L23 9L21.59 7.58Z"
-              fill="currentColor"
-            />
-          </svg>
-        );
-      case "read":
-        return (
-          <svg
-            width="22"
-            height="22"
-            viewBox="0 0 24 24"
-            fill="none"
-            className="text-purple-300"
-          >
-            <path
-              d="M16.59 7.58L10 14.17L7.41 11.58L6 13L10 17L18 9L16.59 7.58Z"
-              fill="currentColor"
-            />
-            <path
-              d="M21.59 7.58L15 14.17L12.41 11.58L11 13L15 17L23 9L21.59 7.58Z"
-              fill="currentColor"
-            />
-          </svg>
-        );
-      default:
-        return null;
+    if (status === "sent" && userId === user_id) {
+      return (
+        <svg
+          width="16"
+          height="16"
+          viewBox="0 0 24 24"
+          fill="none"
+          className="text-gray-400"
+        >
+          <path
+            d="M9 16.17L5.83 13l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z"
+            fill="currentColor"
+          />
+        </svg>
+      );
+    }
+    if (status === "delivered") {
+      return (
+        <svg
+          width="16"
+          height="16"
+          viewBox="0 0 24 24"
+          fill="none"
+          className="text-gray-300"
+        >
+          <path
+            d="M16.59 7.58L10 14.17L7.41 11.58L6 13L10 17L18 9L16.59 7.58Z"
+            fill="currentColor"
+          />
+          <path
+            d="M21.59 7.58L15 14.17L12.41 11.58L11 13L15 17L23 9L21.59 7.58Z"
+            fill="currentColor"
+          />
+        </svg>
+      );
+    }
+    if (status === "read") {
+      return (
+        <svg
+          width="22"
+          height="22"
+          viewBox="0 0 24 24"
+          fill="none"
+          className="text-purple-300"
+        >
+          <path
+            d="M16.59 7.58L10 14.17L7.41 11.58L6 13L10 17L18 9L16.59 7.58Z"
+            fill="currentColor"
+          />
+          <path
+            d="M21.59 7.58L15 14.17L12.41 11.58L11 13L15 17L23 9L21.59 7.58Z"
+            fill="currentColor"
+          />
+        </svg>
+      );
     }
   };
 
@@ -79,11 +81,18 @@ const ChatMessage: React.FC<ChatMessageProps> = ({
       key as "1" | "2" | "3" | "4" | "5" | "6" | "7" | "8" | "9" | "10"
     ];
   };
+  useEffect(() => {
+    if (userId === undefined) return;
+    if (userId === null) return;
+    if (userId === user_id) return;
+
+    read(id, userId);
+  }, [userId, id, read]);
 
   return (
     <div
       className={`w-full flex ${
-        user_id !== current_user_id ? "justify-end" : "justify-start"
+        user_id === userId ? "justify-end" : "justify-start"
       }`}
     >
       <div className="relative flex justify-end mb-4 px-4 min-w-[80px] max-w-100">
@@ -111,7 +120,7 @@ const ChatMessage: React.FC<ChatMessageProps> = ({
           </div>
         </div>
 
-        {user_id !== current_user_id ? (
+        {user_id === userId ? (
           <div
             className={`absolute right-[10px] -bottom-[4px] w-0 h-0 border-l-[9px] border-l-transparent border-r-[9px] border-r-transparent border-b-[12px] ${
               getColorConfig(colorNumber).leftCorner

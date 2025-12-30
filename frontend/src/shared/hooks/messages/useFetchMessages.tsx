@@ -13,6 +13,11 @@ interface Message {
   created_at: string;
 }
 
+interface MessageRead {
+  user_id: number;
+  message_id: number;
+}
+
 export function useFetchMessages(chat_id: number) {
   const [isLoading, setIsLoading] = useState(false);
   const [messages, setMessages] = useState<Message[]>([]);
@@ -42,13 +47,33 @@ export function useFetchMessages(chat_id: number) {
   useEffect(() => {
     fetch();
 
-    socket.on("message", (data: Message) => {
+    const handleNewMessage = (data: Message) => {
       setMessages((prev) => [...prev, data]);
-    });
+    };
 
-    socket.on("messageRead", (data: any) => {
-      console.log("=--=read", data);
-    });
+    const handleMessageRead = (data: MessageRead | null) => {
+      if (!data || !data.message_id) {
+        return;
+      }
+
+      setMessages((prev) =>
+        prev.map((msg) => {
+          if (msg.id === data.message_id) {
+            const currentCount = Number(msg.reads_count) || 0;
+            return { ...msg, reads_count: String(currentCount + 1) };
+          }
+          return msg;
+        })
+      );
+    };
+
+    socket.on("message", handleNewMessage);
+    socket.on("messageRead", handleMessageRead);
+
+    return () => {
+      socket.off("message", handleNewMessage);
+      socket.off("messageRead", handleMessageRead);
+    };
   }, []);
 
   return { isLoading, messages, fetch };
