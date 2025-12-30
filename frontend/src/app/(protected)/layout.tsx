@@ -44,7 +44,7 @@ export default function ProtectedLayout({
 
   return (
     <div className="w-full h-full mx-auto bg-opacity-20 overflow-y-auto flex justify-center">
-      <div className="w-200 max-w-full bg-black/50">
+      <div className="w-200 max-w-full bg-black/50 ">
         <Navbar />
         {children}
         <Tabbar />

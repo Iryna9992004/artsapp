@@ -8,6 +8,9 @@ interface Message {
   text: string;
   topic_id: string;
   user_id: string;
+  author_name: string;
+  reads_count: string;
+  created_at: string;
 }
 
 export function useFetchMessages(chat_id: number) {
@@ -39,17 +42,13 @@ export function useFetchMessages(chat_id: number) {
   useEffect(() => {
     fetch();
 
-    socket.on("message", (data: any) => {
-      console.log("=--=received", data);
+    socket.on("message", (data: Message) => {
+      setMessages((prev) => [...prev, data]);
     });
 
     socket.on("messageRead", (data: any) => {
       console.log("=--=read", data);
     });
-
-    return () => {
-      socket.off("receive_message");
-    };
   }, []);
 
   return { isLoading, messages, fetch };

@@ -1,4 +1,5 @@
 "use client";
+import MessagesList from "@/components/features/messages-list";
 import SendForm from "@/components/features/send-form";
 import { useFetchMessages } from "@/shared/hooks/messages/useFetchMessages";
 import { useReadMessage } from "@/shared/hooks/messages/useReadMessage";
@@ -8,7 +9,7 @@ import { SendInputFormInputs } from "@/shared/validations/send-input/inputs";
 import { sendFormValidationSchema } from "@/shared/validations/send-input/schema";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useParams } from "next/navigation";
-import React from "react";
+import React, { useEffect, useRef } from "react";
 import { useForm } from "react-hook-form";
 
 export const dynamic = "force-dynamic";
@@ -22,6 +23,7 @@ export default function Page() {
   const {
     register,
     handleSubmit,
+    setValue,
     getValues,
     formState: { isValid },
   } = useForm<SendInputFormInputs>({
@@ -42,18 +44,19 @@ export default function Page() {
     console.log("messages", messages);
   };
 
-  const submit = () => {
+  const submit = async () => {
     if (!isValid) return;
+    const text = getValues("text");
+    await send(text);
+    setValue("text", "");
   };
 
   return (
-    <div className="p-2 max-h-[90vh] overflow-y-auto pb-20">
-      {/* <form onSubmit={handleSubmit(submit)}>
+    <div className="p-2 max-h-[90vh] overflow-y-auto">
+      <MessagesList data={messages} />
+      <form onSubmit={handleSubmit(submit)}>
         <SendForm register={register("text")} value={getValues("text")} />
-      </form> */}
-      <button onClick={sendMessage1} className="bg-red-300">
-        Click
-      </button>
+      </form>
     </div>
   );
 }

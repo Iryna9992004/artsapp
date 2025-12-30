@@ -5,7 +5,7 @@ import { SendFormProps } from "./types";
 
 export default function SendForm({ register, value }: SendFormProps) {
   return (
-    <div className="fixed bottom-0 left-0 right-0 w-full flex items-center justify-center px-4">
+    <div className="absolute bottom-0 left-0 right-0 w-full flex items-center justify-center px-4">
       <div className="w-200 max-w-full  bg-black/80 py-4 flex items-center gap-3">
         <input
           className="rounded-full py-3 px-6 flex-1 bg-gray-800 border border-gray-400 placeholder-white text-white outline-none focus:border-white"

@@ -1,6 +1,7 @@
 import React from "react";
 import { ChatMessageProps } from "./types";
 import { colors } from "./colors";
+import { useUserId } from "@/shared/hooks/user/useUserId";
 
 const ChatMessage: React.FC<ChatMessageProps> = ({
   text,
@@ -8,7 +9,10 @@ const ChatMessage: React.FC<ChatMessageProps> = ({
   status,
   author,
   colorNumber,
+  user_id,
 }) => {
+  const { user_id: current_user_id } = useUserId();
+
   const getStatusIcon = () => {
     switch (status) {
       case "sent":
@@ -78,19 +82,25 @@ const ChatMessage: React.FC<ChatMessageProps> = ({
 
   return (
     <div
-      className={`w-full flex ${author.email ? "justify-end" : "justify-start"}`}
+      className={`w-full flex ${
+        user_id !== current_user_id ? "justify-end" : "justify-start"
+      }`}
     >
       <div className="relative flex justify-end mb-4 px-4 min-w-[80px] max-w-100">
         <div className="w-full">
           <div
-            className={`${getColorConfig(colorNumber).border} text-white rounded-2xl p-[1px] relative`}
+            className={`${
+              getColorConfig(colorNumber).border
+            } text-white rounded-2xl p-[1px] relative`}
           >
             <div
-              className={`${author.email ? getColorConfig(colorNumber).bgRight : getColorConfig(colorNumber).bgLeft} text-white rounded-2xl px-4 py-3 relative`}
+              className={`${
+                author
+                  ? getColorConfig(colorNumber).bgRight
+                  : getColorConfig(colorNumber).bgLeft
+              } text-white rounded-2xl px-4 py-3 relative`}
             >
-              <span className="text-white font-bold text-md">
-                {author.full_name}
-              </span>
+              <span className="text-white font-bold text-md">{author}</span>
               <p className="text-md leading-relaxed">{text}</p>
               <div className="flex items-center justify-between mt-1 space-x-2">
                 <span className="text-xs text-gray-200">{timestamp}</span>
@@ -101,13 +111,17 @@ const ChatMessage: React.FC<ChatMessageProps> = ({
           </div>
         </div>
 
-        {author.email ? (
+        {user_id !== current_user_id ? (
           <div
-            className={`absolute right-[10px] -bottom-[4px] w-0 h-0 border-l-[9px] border-l-transparent border-r-[9px] border-r-transparent border-b-[12px] ${getColorConfig(colorNumber).leftCorner} transform -rotate-226`}
+            className={`absolute right-[10px] -bottom-[4px] w-0 h-0 border-l-[9px] border-l-transparent border-r-[9px] border-r-transparent border-b-[12px] ${
+              getColorConfig(colorNumber).leftCorner
+            } transform -rotate-226`}
           />
         ) : (
           <div
-            className={`absolute left-[10px] -bottom-[4px] w-0 h-0 border-l-[9px] border-l-transparent border-r-[9px] border-r-transparent border-b-[12px] ${getColorConfig(colorNumber).rightCorner} transform rotate-226`}
+            className={`absolute left-[10px] -bottom-[4px] w-0 h-0 border-l-[9px] border-l-transparent border-r-[9px] border-r-transparent border-b-[12px] ${
+              getColorConfig(colorNumber).rightCorner
+            } transform rotate-226`}
           />
         )}
       </div>
