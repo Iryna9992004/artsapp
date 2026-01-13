@@ -22,41 +22,42 @@ export function useTopics(
   async function fetch() {
     setIsLoading(true);
     try {
+      let response;
+      
       if (searchText && searchText?.length > 0) {
-        const response = await fetchTopics(limit, offset, searchText);
-        if (response.length === 10) {
-          setHasMore(true);
-        } else {
-          setHasMore(false);
-        }
+        response = await fetchTopics(limit, offset, searchText);
         setTopics([...response]);
       } else if (searchText === "") {
-        const response = await fetchTopics(limit, offset, searchText);
-        if (response.length === 10) {
-          setHasMore(true);
-        } else {
-          setHasMore(false);
-        }
+        response = await fetchTopics(limit, offset, searchText);
         setTopics([...response]);
       } else {
-        const response = await fetchTopics(limit, offset);
-        if (response.length === 10) {
-          setHasMore(true);
-        } else {
-          setHasMore(false);
-        }
-
+        response = await fetchTopics(limit, offset);
+        
+        // Reset list when offset is 0, otherwise append
         if (offset === 0) {
           setTopics([...response]);
         } else {
-          setTopics((prev) => [...prev, ...response]);
+          // Filter out duplicates when appending
+          setTopics((prev) => {
+            const existingIds = new Set(prev.map(item => item.id));
+            const newItems = response.filter(item => !existingIds.has(item.id));
+            return [...prev, ...newItems];
+          });
         }
+      }
+
+      // Check if there are more items
+      if (response.length < 10) {
+        setHasMore(false);
+      } else {
+        setHasMore(true);
       }
     } catch (e) {
       if (e instanceof AxiosError) {
         toast.error(e.response?.data.message);
+      } else {
+        toast.error("Failed to fetch topics");
       }
-      toast.error("Failed to fetch topics");
     } finally {
       setIsLoading(false);
     }

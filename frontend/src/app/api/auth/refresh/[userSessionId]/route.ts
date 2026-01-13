@@ -8,9 +8,6 @@ export async function GET(
   context: {
     params: Promise<{
       userSessionId: string;
-      id: string;
-      full_name: string;
-      email: string;
     }>;
   }
 ) {

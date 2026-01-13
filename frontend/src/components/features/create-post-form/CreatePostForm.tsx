@@ -1,21 +1,24 @@
 "use client";
 import Button from "@/components/ui/button";
-import DragAndDrop from "@/components/ui/drag-and-drop";
 import Input from "@/components/ui/input";
 import TextArea from "@/components/ui/text-area/TextArea";
-import React, { useState } from "react";
+import React from "react";
 import { useForm } from "react-hook-form";
 import { CreatePostFormInputs } from "./inputs";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { createPostFormValidationSchema } from "./schema";
+import { useUserId } from "@/shared/hooks/user/useUserId";
+import { useCreatePost } from "@/shared/hooks/posts/useCreatePost";
 
 export default function CreatePostForm() {
   const {
     register,
     handleSubmit,
-    formState: { errors, isValid, isSubmitted },
+    getValues,
+    formState: { errors, isValid },
   } = useForm<CreatePostFormInputs>({
     resolver: zodResolver(createPostFormValidationSchema),
+    mode: "onChange",
     defaultValues: {
       theme: "",
       title: "",
@@ -23,11 +26,14 @@ export default function CreatePostForm() {
     },
   });
 
-  const [file, setFile] = useState<File | null | undefined>(undefined);
+  const { userId } = useUserId();
+  const { create, isLoading } = useCreatePost(userId);
 
-  const submit = () => {
-    if (!file) return;
+  const submit = async () => {
     if (!isValid) return;
+    const title = getValues("title");
+    const description = getValues("description");
+    await create(title, description);
   };
 
   return (
@@ -38,23 +44,20 @@ export default function CreatePostForm() {
       <h1 className="text-3xl text-center font-bold text-white mb-10">
         Share your thoughts in post...
       </h1>
-      <DragAndDrop
-        value={file as never}
-        setValue={setFile}
-        errorMessage={isSubmitted && !file ? "File is required" : null}
-      />
       <Input
         register={register("title")}
         placeholder="Write a title of post"
         errorMessage={errors.title?.message}
+        disabled={isLoading}
       />
       <TextArea
         register={register("description")}
         placeholder="Write a description of post"
         errorMessage={errors.description?.message}
+        disabled={isLoading}
       />
 
-      <Button text="Publish Post" type="submit" />
+      <Button text={isLoading ? "Publishing..." : "Publish Post"} type="submit" disabled={isLoading} />
     </form>
   );
 }

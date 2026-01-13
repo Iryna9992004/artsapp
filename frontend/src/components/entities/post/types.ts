@@ -1,5 +1,4 @@
 export interface PostProps {
-  img_source: string;
   date: string;
   title: string;
   description: string;

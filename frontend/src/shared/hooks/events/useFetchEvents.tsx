@@ -28,12 +28,18 @@ export function useFetchEvents(
         response = await fetchEvents(offset, limit, searchText);
         setEvents([...response]);
       } else {
-        if (limit === 0) {
-          response = await fetchEvents(offset, limit);
+        response = await fetchEvents(offset, limit, searchText);
+        
+        // Reset list when offset is 0, otherwise append
+        if (offset === 0) {
           setEvents([...response]);
         } else {
-          response = await fetchEvents(offset, limit, searchText);
-          setEvents((prev) => [...prev, ...response]);
+          // Filter out duplicates when appending
+          setEvents((prev) => {
+            const existingIds = new Set(prev.map(item => item.id));
+            const newItems = response.filter(item => !existingIds.has(item.id));
+            return [...prev, ...newItems];
+          });
         }
       }
 

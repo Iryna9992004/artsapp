@@ -3,9 +3,7 @@ import Toast from "@/components/ui/toast";
 import Navbar from "@/components/widgets/navbar";
 import Tabbar from "@/components/widgets/tabbar";
 import { usePathname, useRouter } from "next/navigation";
-import React, { useEffect } from "react";
-
-export const dynamic = "force-dynamic";
+import React, { useEffect, Suspense } from "react";
 
 export default function ProtectedLayout({
   children,
@@ -45,9 +43,13 @@ export default function ProtectedLayout({
   return (
     <div className="w-full h-full mx-auto bg-opacity-20 overflow-y-auto flex justify-center">
       <div className="w-200 max-w-full bg-black/50 ">
-        <Navbar />
+        <Suspense fallback={<div>Loading...</div>}>
+          <Navbar />
+        </Suspense>
         {children}
-        <Tabbar />
+        <Suspense fallback={<div>Loading...</div>}>
+          <Tabbar />
+        </Suspense>
       </div>
     </div>
   );

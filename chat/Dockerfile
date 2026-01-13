@@ -19,7 +19,7 @@ USER node
 
 #prod
 FROM node:22-slim AS production
-WORKDIR /user/src/app
+WORKDIR /usr/src/app
 COPY --from=build /usr/src/app/node_modules ./node_modules
 COPY --from=build /usr/src/app/dist ./dist
 CMD ["node", "dist/main.js"]

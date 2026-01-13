@@ -4,6 +4,9 @@ import { config } from './shared/config';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
+  app.enableCors({
+    origin: config.frontend.url,
+  })
   await app.listen(config.base.port);
 }
 bootstrap();

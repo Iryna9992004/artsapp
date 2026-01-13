@@ -12,6 +12,10 @@ export const $apiEvent = axios.create({
   baseURL: process.env.eventApi,
 });
 
+export const $apiPost = axios.create({
+  baseURL: process.env.postApi,
+});
+
 export const $apiFetch = axios.create({
   baseURL: process.env.fetchApi,
 });

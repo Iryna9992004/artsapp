@@ -4,11 +4,11 @@ import { MessageListProps } from "./types";
 import { useUserId } from "@/shared/hooks/user/useUserId";
 
 export default function MessagesList({ data }: MessageListProps) {
-  const messagesListRef = useRef<any>(null);
+  const messagesListRef = useRef<HTMLDivElement>(null);
   const { userId } = useUserId();
 
   useEffect(() => {
-    messagesListRef.current.scrollIntoView({
+    messagesListRef.current?.scrollIntoView({
       behavior: "smooth",
       block: "end",
     });

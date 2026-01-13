@@ -3,5 +3,4 @@ export interface EventProps {
   description: string;
   author: string;
   date: string;
-  img_source?: string;
 }

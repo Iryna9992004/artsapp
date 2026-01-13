@@ -158,3 +158,4 @@ echo "   - Підключення до ClickHouse: docker exec -it clickhouse cl
 
 docker exec clickhouse clickhouse-client --query "SELECT * from artsapp_sync.events;"
 
+

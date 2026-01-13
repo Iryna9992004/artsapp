@@ -1,0 +1,255 @@
+version: '3.8'
+
+services:
+  # ============================================
+  # БАЗИ ДАНИХ ТА КЕШІ
+  # ============================================
+  
+  postgres:
+    image: postgres:16
+    container_name: artsapp-postgres-prod
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: ${PG_PASSWORD:-1111}
+      POSTGRES_DB: artsapp
+    command:
+      - postgres
+      - -c
+      - wal_level=logical
+      - -c
+      - max_replication_slots=10
+      - -c
+      - max_wal_senders=10
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - artsapp-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  redis:
+    image: redis:7-alpine
+    container_name: artsapp-redis-prod
+    restart: unless-stopped
+    command: redis-server --requirepass ${REDIS_PASSWORD:-1111}
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    networks:
+      - artsapp-network
+    healthcheck:
+      test: ["CMD", "redis-cli", "--raw", "incr", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  clickhouse:
+    image: clickhouse/clickhouse-server:latest
+    container_name: artsapp-clickhouse-prod
+    restart: unless-stopped
+    environment:
+      CLICKHOUSE_DB: ${CLICKHOUSE_DB:-clickhouse}
+      CLICKHOUSE_USER: ${CLICKHOUSE_USER:-clickhouse}
+      CLICKHOUSE_DEFAULT_ACCESS_MANAGEMENT: 1
+      CLICKHOUSE_PASSWORD: ${CLICKHOUSE_PASSWORD:-1111}
+    ports:
+      - "8123:8123"
+      - "9000:9000"
+    volumes:
+      - clickhouse_data:/var/lib/clickhouse
+    networks:
+      - artsapp-network
+    healthcheck:
+      test: ["CMD", "wget", "--spider", "-q", "http://localhost:8123/ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # ============================================
+  # МІКРОСЕРВІСИ
+  # ============================================
+
+  auth-service:
+    build:
+      context: ./auth
+      dockerfile: Dockerfile
+      target: production
+    container_name: artsapp-auth-prod
+    restart: unless-stopped
+    environment:
+      NODE_ENV: production
+      PORT: 4000
+      PG_HOST: postgres
+      PG_PORT: 5432
+      PG_USER: postgres
+      PG_PASSWORD: ${PG_PASSWORD:-1111}
+      PG_NAME: artsapp
+      DB_TYPE: postgres
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
+      REDIS_PASSWORD: ${REDIS_PASSWORD:-1111}
+      CLICKHOUSE_HOST: http://clickhouse:8123
+      CLICKHOUSE_USER: ${CLICKHOUSE_USER:-clickhouse}
+      CLICKHOUSE_PASSWORD: ${CLICKHOUSE_PASSWORD:-1111}
+      CLICKHOUSE_DB: ${CLICKHOUSE_DB:-clickhouse}
+      JWT_ACCESS_SECRET: ${JWT_ACCESS_SECRET:-your-super-secret-access-key-change-in-production}
+      JWT_RESRESH_SECRET: ${JWT_REFRESH_SECRET:-your-super-secret-refresh-key-change-in-production}
+      CLIENT_BASE_URL: ${FRONTEND_URL:-http://localhost:3000}
+    ports:
+      - "4000:4000"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      clickhouse:
+        condition: service_healthy
+    networks:
+      - artsapp-network
+
+  chat-service:
+    build:
+      context: ./chat
+      dockerfile: Dockerfile
+      target: production
+    container_name: artsapp-chat-prod
+    restart: unless-stopped
+    environment:
+      NODE_ENV: production
+      PORT: 4001
+      PG_HOST: postgres
+      PG_PORT: 5432
+      PG_USER: postgres
+      PG_PASSWORD: ${PG_PASSWORD:-1111}
+      PG_NAME: artsapp
+      DB_TYPE: postgres
+      CLIENT_BASE_URL: ${FRONTEND_URL:-http://localhost:3000}
+    ports:
+      - "4001:4001"
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - artsapp-network
+
+  events-service:
+    build:
+      context: ./events
+      dockerfile: Dockerfile
+      target: production
+    container_name: artsapp-events-prod
+    restart: unless-stopped
+    environment:
+      NODE_ENV: production
+      PORT: 4002
+      PG_HOST: postgres
+      PG_PORT: 5432
+      PG_USER: postgres
+      PG_PASSWORD: ${PG_PASSWORD:-1111}
+      PG_NAME: artsapp
+      FRONTEND_URL: ${FRONTEND_URL:-http://localhost:3000}
+    ports:
+      - "4002:4002"
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - artsapp-network
+
+  fetch-service:
+    build:
+      context: ./fetch
+      dockerfile: Dockerfile
+      target: production
+    container_name: artsapp-fetch-prod
+    restart: unless-stopped
+    environment:
+      NODE_ENV: production
+      PORT: 4003
+      CLICKHOUSE_HOST: clickhouse
+      CLICKHOUSE_PORT: 8123
+      CLICKHOUSE_USER: ${CLICKHOUSE_USER:-clickhouse}
+      CLICKHOUSE_PASSWORD: ${CLICKHOUSE_PASSWORD:-1111}
+      CLICKHOUSE_DB: ${CLICKHOUSE_DB:-clickhouse}
+      DB_NAME: artsapp_sync
+      FRONTEND_URL: ${FRONTEND_URL:-http://localhost:3000}
+    ports:
+      - "4003:4003"
+    depends_on:
+      clickhouse:
+        condition: service_healthy
+    networks:
+      - artsapp-network
+
+  posts-service:
+    build:
+      context: ./posts
+      dockerfile: Dockerfile
+      target: production
+    container_name: artsapp-posts-prod
+    restart: unless-stopped
+    environment:
+      NODE_ENV: production
+      PORT: 4004
+      PG_HOST: postgres
+      PG_PORT: 5432
+      PG_USER: postgres
+      PG_PASSWORD: ${PG_PASSWORD:-1111}
+      PG_NAME: artsapp
+      FRONTEND_URL: ${FRONTEND_URL:-http://localhost:3000}
+    ports:
+      - "4004:4004"
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - artsapp-network
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+      target: production
+    container_name: artsapp-frontend-prod
+    restart: unless-stopped
+    environment:
+      NODE_ENV: production
+      NEXT_PUBLIC_AUTH_URL: ${NEXT_PUBLIC_AUTH_URL:-http://localhost:4000}
+      NEXT_PUBLIC_CHAT_URL: ${NEXT_PUBLIC_CHAT_URL:-http://localhost:4001}
+      NEXT_PUBLIC_EVENTS_URL: ${NEXT_PUBLIC_EVENTS_URL:-http://localhost:4002}
+      NEXT_PUBLIC_FETCH_URL: ${NEXT_PUBLIC_FETCH_URL:-http://localhost:4003}
+      NEXT_PUBLIC_POSTS_URL: ${NEXT_PUBLIC_POSTS_URL:-http://localhost:4004}
+    ports:
+      - "3000:3000"
+    depends_on:
+      - auth-service
+      - chat-service
+      - events-service
+      - fetch-service
+      - posts-service
+    networks:
+      - artsapp-network
+
+# ============================================
+# МЕРЕЖІ ТА ТОМИ
+# ============================================
+
+networks:
+  artsapp-network:
+    driver: bridge
+
+volumes:
+  postgres_data:
+    driver: local
+  redis_data:
+    driver: local
+  clickhouse_data:
+    driver: local
+
