@@ -39,7 +39,6 @@ export class AuthController {
     @Param('userSessionId') userSessionId: string,
     @Res() response: Response,
   ) {
-    console.log('use', userSessionId);
     const res = await this.logoutUsecase.execute(userSessionId);
     return response.json(res);
   }

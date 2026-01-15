@@ -1,12 +1,10 @@
 import { Module } from '@nestjs/common';
-import { PgModule } from './pg/pg.module';
-import { EventsModule } from './events/interface/events.module';
+import { AppController } from './app.controller';
 import { RMQModule } from 'nestjs-rmq';
+import { MailerModule } from '@nestjs-modules/mailer';
 
 @Module({
   imports: [
-    PgModule,
-    EventsModule,
     RMQModule.forRoot({
       exchangeName: 'Notification',
       connections: [
@@ -21,8 +19,19 @@ import { RMQModule } from 'nestjs-rmq';
       prefetchCount: 32,
       serviceName: 'notifications',
     }),
+    MailerModule.forRoot({
+      transport: {
+        host: 'smtp.gmail.com',
+        port: 587,
+        secure: false,
+        auth: {
+          user: 'iren171302@gmail.com',
+          pass: 'bikp zena punv nray',
+        },
+      },
+    }),
   ],
-  controllers: [],
+  controllers: [AppController],
   providers: [],
 })
 export class AppModule {}

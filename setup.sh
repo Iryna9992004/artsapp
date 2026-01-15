@@ -42,6 +42,10 @@ for i in {1..30}; do
   sleep 1
 done
 
+# RabbitMQ
+docker run -d --name rabbitmq -p 5672:5672 -p 15672:15672 rabbitmq:4-management
+
+
 # 5. Перевірка wal_level
 echo "5️⃣  Перевірка wal_level..."
 WAL_LEVEL=$(docker exec postgres psql -U postgres -t -c "SHOW wal_level;" | tr -d ' ')
@@ -157,6 +161,8 @@ echo "   - Підключення до PostgreSQL: docker exec -it postgres psql
 echo "   - Підключення до ClickHouse: docker exec -it clickhouse clickhouse-client"
 
 docker exec clickhouse clickhouse-client --query "SELECT * from artsapp_sync.events;"
+
+
 
 
 
