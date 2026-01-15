@@ -16,9 +16,10 @@ export class CreateEventsecase {
       user_id,
     );
     await this.rmqService.notify('notify', {
-      title: response.title,
+      title: `New Event Created - ${response.title}`,
       description: response.event_description,
     });
+
     return response;
   }
 }

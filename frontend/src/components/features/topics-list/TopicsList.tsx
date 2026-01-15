@@ -50,13 +50,13 @@ export default function TopicsList({ searchText }: TopicsListProps) {
           className="animate-fade-in"
           style={{ animationDelay: `${index * 0.03}s` }}
         >
-          <FeedMessage
-            id={item.id}
-            text={item.text}
-            timestamp={item.created_at}
-            author={item.author_name}
-            colorNumber={item.id % 10}
-          />
+        <FeedMessage
+          id={item.id}
+          text={item.text}
+          timestamp={item.created_at}
+          author={item.author_name}
+          colorNumber={item.id % 10}
+        />
         </div>
       ))}
       {isLoading && topics.length > 0 && (

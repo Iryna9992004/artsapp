@@ -36,14 +36,14 @@ export default function Post({
         <div className="flex items-center gap-4">
           <div className="p-3 bg-gradient-to-br from-blue-500 to-purple-600 flex text-white items-center justify-center rounded-full shadow-md group-hover:scale-110 transition-transform duration-200">
             <Music size={20} />
-          </div>
+              </div>
 
           <div className="flex flex-col gap-1">
             <div className="flex items-center gap-2">
               <User size={14} className="text-blue-400" />
               <span className="text-base font-semibold text-white">
-                {author}
-              </span>
+                  {author}
+                </span>
             </div>
 
             {author_occupation && (

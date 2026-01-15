@@ -54,14 +54,14 @@ export default function EventsList({ searchText }: EventsListProps) {
             className="animate-fade-in"
             style={{ animationDelay: `${index * 0.05}s` }}
           >
-            <Event
-              title={item.title}
-              description={item.event_description}
-              author={item.author_name}
-              date={item.created_at}
-            />
+        <Event
+          title={item.title}
+          description={item.event_description}
+          author={item.author_name}
+          date={item.created_at}
+        />
           </div>
-        ))}
+      ))}
       </div>
       {isLoading && events.length > 0 && (
         <div className="flex items-center justify-center py-8">
