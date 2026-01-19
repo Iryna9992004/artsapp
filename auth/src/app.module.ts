@@ -19,9 +19,7 @@ import { RMQModule } from 'nestjs-rmq';
           port: 5672,
         },
       ],
-      queueName: 'notifications',
-      prefetchCount: 32,
-      serviceName: 'notifications',
+      serviceName: 'auth',
     }),
   ],
 })
