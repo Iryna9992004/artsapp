@@ -22,7 +22,7 @@ export function useTopics(
   async function fetch() {
     setIsLoading(true);
     try {
-      let response;
+      let response: Topic[];
       
       if (searchText && searchText?.length > 0) {
         response = await fetchTopics(limit, offset, searchText);
