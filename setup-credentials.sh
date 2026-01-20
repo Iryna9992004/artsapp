@@ -26,7 +26,7 @@ CLICKHOUSE_PASSWORD="${CLICKHOUSE_PASSWORD:-1111}"
 CLICKHOUSE_DB="${CLICKHOUSE_DB:-clickhouse}"
 
 FRONTEND_URL="${FRONTEND_URL:-http://localhost:3000}"
-CLIENT_BASE_URL="${CLIENT_BASE_URL:-http://localhost:3001}"
+CLIENT_BASE_URL="${CLIENT_BASE_URL:-http://localhost:3000}"
 
 # JWT секрети (генеруються автоматично, якщо не встановлені)
 if [ -z "$JWT_ACCESS_SECRET" ]; then
