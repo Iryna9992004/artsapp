@@ -9,18 +9,6 @@ import { RMQModule } from 'nestjs-rmq';
   imports: [
     AuthModule,
     PgModule,
-    RMQModule.forRoot({
-      exchangeName: 'Notification',
-      connections: [
-        {
-          login: 'guest',
-          password: 'guest',
-          host: 'localhost',
-          port: 5672,
-        },
-      ],
-      serviceName: 'auth',
-    }),
   ],
 })
 export class AppModule {}
