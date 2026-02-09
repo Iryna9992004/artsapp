@@ -2,6 +2,7 @@
 
 # Скрипт для автоматичного створення .env файлів у всіх папках
 # Використання: ./setup-credentials.sh
+# Структура: backend (об'єднаний), frontend, notifications (окремий мікросервіс)
 
 set -e
 
@@ -25,6 +26,11 @@ CLICKHOUSE_USER="${CLICKHOUSE_USER:-clickhouse}"
 CLICKHOUSE_PASSWORD="${CLICKHOUSE_PASSWORD:-1111}"
 CLICKHOUSE_DB="${CLICKHOUSE_DB:-clickhouse}"
 
+RABBITMQ_HOST="${RABBITMQ_HOST:-localhost}"
+RABBITMQ_PORT="${RABBITMQ_PORT:-5672}"
+RABBITMQ_USER="${RABBITMQ_USER:-admin}"
+RABBITMQ_PASSWORD="${RABBITMQ_PASSWORD:-1111}"
+
 FRONTEND_URL="${FRONTEND_URL:-http://localhost:3000}"
 CLIENT_BASE_URL="${CLIENT_BASE_URL:-http://localhost:3000}"
 
@@ -37,11 +43,8 @@ if [ -z "$JWT_REFRESH_SECRET" ]; then
 fi
 
 # Порти сервісів
-AUTH_PORT="${AUTH_PORT:-4000}"
-CHAT_PORT="${CHAT_PORT:-4001}"
-EVENTS_PORT="${EVENTS_PORT:-4002}"
-FETCH_PORT="${FETCH_PORT:-4003}"
-POSTS_PORT="${POSTS_PORT:-4004}"
+BACKEND_PORT="${BACKEND_PORT:-4000}"
+NOTIFICATIONS_PORT="${NOTIFICATIONS_PORT:-4005}"
 
 # Функція для створення .env файлу
 create_env_file() {
@@ -59,37 +62,92 @@ create_env_file() {
     fi
 }
 
-# 1. Frontend .env (рядки 1-20)
+# 1. Frontend .env
 echo "1️⃣  Створення frontend/.env..."
-FRONTEND_ENV="NEXT_PUBLIC_API_URL=http://localhost:${AUTH_PORT}
-
-NEXT_PUBLIC_CHAT_API_URL=http://localhost:${CHAT_PORT}
-
-NEXT_PUBLIC_EVENTS_API_URL=http://localhost:${EVENTS_PORT}
-
-NEXT_PUBLIC_POSTS_API_URL=http://localhost:${POSTS_PORT}
-
-NEXT_PUBLIC_FETCH_API_URL=http://localhost:${FETCH_PORT}
+FRONTEND_ENV="NEXT_PUBLIC_API_URL=http://localhost:${BACKEND_PORT}
 
 "
 create_env_file "frontend" "$FRONTEND_ENV"
 
-# 2. Chat .env (рядки 1-9)
-echo "2️⃣  Створення chat/.env..."
-CHAT_ENV="PORT=${CHAT_PORT}
+# 2. Backend .env (об'єднаний сервіс з auth, chat, events, fetch, posts)
+echo "2️⃣  Створення backend/.env..."
+BACKEND_ENV="PORT=${BACKEND_PORT}
 
+# PostgreSQL
 PG_NAME=${DB_NAME}
 PG_USER=${DB_USER}
 PG_PASSWORD=${DB_PASSWORD}
 PG_HOST=${DB_HOST}
 PG_PORT=${DB_PORT}
 DB_TYPE=${DB_TYPE}
+
+# Redis
+REDIS_HOST=${REDIS_HOST}
+REDIS_PORT=${REDIS_PORT}
+REDIS_PASSWORD=${REDIS_PASSWORD}
+
+# ClickHouse
+CLICKHOUSE_HOST=${CLICKHOUSE_HOST}
+CLICKHOUSE_USER=${CLICKHOUSE_USER}
+CLICKHOUSE_PASSWORD=${CLICKHOUSE_PASSWORD}
+CLICKHOUSE_DB=${CLICKHOUSE_DB}
+
+# JWT
+JWT_ACCESS_SECRET=${JWT_ACCESS_SECRET}
+JWT_RESRESH_SECRET=${JWT_REFRESH_SECRET}
+
+# Client
+CLIENT_BASE_URL=${CLIENT_BASE_URL}
+FRONTEND_URL=${FRONTEND_URL}
+
+# RabbitMQ (для спілкування з notifications)
+# Встановіть ENABLE_RABBITMQ=false, якщо RabbitMQ не запущений
+ENABLE_RABBITMQ=${ENABLE_RABBITMQ:-true}
+RABBITMQ_HOST=${RABBITMQ_HOST}
+RABBITMQ_PORT=${RABBITMQ_PORT}
+RABBITMQ_USER=${RABBITMQ_USER}
+RABBITMQ_PASSWORD=${RABBITMQ_PASSWORD}
+RABBITMQ_EXCHANGE_NAME=Notification
+
+# DB для fetch модуля
+DB_NAME=${DB_NAME}_sync
+"
+create_env_file "backend" "$BACKEND_ENV"
+
+# 3. Notifications .env (окремий мікросервіс)
+echo "3️⃣  Створення notifications/.env..."
+NOTIFICATIONS_ENV="PORT=${NOTIFICATIONS_PORT}
+
+# PostgreSQL
+PG_NAME=${DB_NAME}
+PG_USER=${DB_USER}
+PG_PASSWORD=${DB_PASSWORD}
+PG_HOST=${DB_HOST}
+PG_PORT=${DB_PORT}
+DB_TYPE=${DB_TYPE}
+
+# Redis
+REDIS_HOST=${REDIS_HOST}
+REDIS_PORT=${REDIS_PORT}
+REDIS_PASSWORD=${REDIS_PASSWORD}
+
+# RabbitMQ
+RABBITMQ_HOST=${RABBITMQ_HOST}
+RABBITMQ_PORT=${RABBITMQ_PORT}
+RABBITMQ_USER=${RABBITMQ_USER}
+RABBITMQ_PASSWORD=${RABBITMQ_PASSWORD}
+RABBITMQ_EXCHANGE_NAME=Notification
+RABBITMQ_QUEUE_NAME=notifications
+RABBITMQ_SERVICE_NAME=notifications
+
+# Frontend
+FRONTEND_URL=${FRONTEND_URL}
 CLIENT_BASE_URL=${CLIENT_BASE_URL}
 "
-create_env_file "chat" "$CHAT_ENV"
+create_env_file "notifications" "$NOTIFICATIONS_ENV"
 
-# 3. DB .env (рядки 1-15)
-echo "3️⃣  Створення db/.env..."
+# 4. DB .env (для міграцій)
+echo "4️⃣  Створення db/.env..."
 DB_ENV="CLICKHOUSE_HOST=${CLICKHOUSE_HOST}
 CLICKHOUSE_USER=${CLICKHOUSE_USER}
 CLICKHOUSE_PASSWORD=${CLICKHOUSE_PASSWORD}
@@ -108,115 +166,14 @@ REDIS_PASSWORD=${REDIS_PASSWORD}
 "
 create_env_file "db" "$DB_ENV"
 
-# 4. Events .env (рядки 1-10)
-echo "4️⃣  Створення events/.env..."
-EVENTS_ENV="PORT=${EVENTS_PORT}
-
-PG_NAME=${DB_NAME}
-PG_USER=${DB_USER}
-PG_PASSWORD=${DB_PASSWORD}
-PG_HOST=${DB_HOST}
-PG_PORT=${DB_PORT}
-DB_TYPE=${DB_TYPE}
-
-FRONTEND_URL=${FRONTEND_URL}
-"
-create_env_file "events" "$EVENTS_ENV"
-
-# 5. Fetch .env (рядки 1-6)
-echo "5️⃣  Створення fetch/.env..."
-FETCH_ENV="PORT=${FETCH_PORT}
-
-FRONTEND_URL=${FRONTEND_URL}
-
-CLICKHOUSE_URL=http://${CLICKHOUSE_USER}:${CLICKHOUSE_PASSWORD}@localhost:8123/${CLICKHOUSE_DB}
-DB_NAME=${DB_NAME}_sync
-"
-create_env_file "fetch" "$FETCH_ENV"
-
-# 6. Notifications .env (рядки 1-22)
-echo "6️⃣  Створення notifications/.env..."
-NOTIFICATIONS_ENV="PORT=${AUTH_PORT}
-
-CLICKHOUSE_HOST=
-CLICKHOUSE_USER=
-CLICKHOUSE_PASSWORD=
-CLICKHOUSE_DB=
-
-JWT_ACCESS_SECRET=${JWT_ACCESS_SECRET}
-JWT_RESRESH_SECRET=${JWT_REFRESH_SECRET}
-
-PG_NAME=${DB_NAME}
-PG_USER=${DB_USER}
-PG_PASSWORD=${DB_PASSWORD}
-PG_HOST=${DB_HOST}
-PG_PORT=${DB_PORT}
-DB_TYPE=${DB_TYPE}
-
-REDIS_HOST=${REDIS_HOST}
-REDIS_PORT=${REDIS_PORT}
-REDIS_PASSWORD=${REDIS_PASSWORD}
-
-CLIENT_BASE_URL=${CLIENT_BASE_URL}
-"
-create_env_file "notifications" "$NOTIFICATIONS_ENV"
-
-# 7. Posts .env (рядки 1-10)
-echo "7️⃣  Створення posts/.env..."
-POSTS_ENV="PORT=${POSTS_PORT}
-
-PG_NAME=${DB_NAME}
-PG_USER=${DB_USER}
-PG_PASSWORD=${DB_PASSWORD}
-PG_HOST=${DB_HOST}
-PG_PORT=${DB_PORT}
-DB_TYPE=${DB_TYPE}
-
-FRONTEND_URL=${FRONTEND_URL}
-"
-create_env_file "posts" "$POSTS_ENV"
-
-# 8. Auth .env (якщо потрібно)
-if [ -d "auth" ]; then
-    echo "8️⃣  Створення auth/.env..."
-    AUTH_ENV="PORT=${AUTH_PORT}
-
-CLICKHOUSE_HOST=
-CLICKHOUSE_USER=
-CLICKHOUSE_PASSWORD=
-CLICKHOUSE_DB=
-
-JWT_ACCESS_SECRET=${JWT_ACCESS_SECRET}
-JWT_RESRESH_SECRET=${JWT_REFRESH_SECRET}
-
-PG_NAME=${DB_NAME}
-PG_USER=${DB_USER}
-PG_PASSWORD=${DB_PASSWORD}
-PG_HOST=${DB_HOST}
-PG_PORT=${DB_PORT}
-DB_TYPE=${DB_TYPE}
-
-REDIS_HOST=${REDIS_HOST}
-REDIS_PORT=${REDIS_PORT}
-REDIS_PASSWORD=${REDIS_PASSWORD}
-
-CLIENT_BASE_URL=${CLIENT_BASE_URL}
-"
-    create_env_file "auth" "$AUTH_ENV"
-fi
-
 echo ""
 echo "🎉 Всі .env файли створені успішно!"
 echo ""
 echo "📝 Створені файли:"
 echo "   - frontend/.env"
-echo "   - chat/.env"
+echo "   - backend/.env (об'єднаний сервіс)"
+echo "   - notifications/.env (окремий мікросервіс)"
 echo "   - db/.env"
-echo "   - events/.env"
-echo "   - fetch/.env"
-echo "   - notifications/.env"
-echo "   - posts/.env"
-[ -d "auth" ] && echo "   - auth/.env"
 echo ""
 echo "💡 Ви можете змінити значення в цих файлах за потреби"
 echo "💡 Для production використовуйте сильніші паролі та секрети!"
@@ -225,3 +182,8 @@ echo "📋 Налаштування можна змінити через змі�
 echo "   export DB_PASSWORD=your_password"
 echo "   export JWT_ACCESS_SECRET=your_secret"
 echo "   ./setup-credentials.sh"
+echo ""
+echo "📌 Нова структура:"
+echo "   - backend: об'єднує auth, chat, events, fetch, posts"
+echo "   - frontend: Next.js додаток"
+echo "   - notifications: окремий мікросервіс для сповіщень"

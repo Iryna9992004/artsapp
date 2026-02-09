@@ -72,20 +72,40 @@ services:
       timeout: 5s
       retries: 5
 
+  rabbitmq:
+    image: rabbitmq:4-management
+    container_name: artsapp-rabbitmq-prod
+    restart: unless-stopped
+    environment:
+      RABBITMQ_DEFAULT_USER: ${RABBITMQ_USER:-admin}
+      RABBITMQ_DEFAULT_PASS: ${RABBITMQ_PASSWORD:-1111}
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    volumes:
+      - rabbitmq_data:/var/lib/rabbitmq
+    networks:
+      - artsapp-network
+    healthcheck:
+      test: ["CMD", "rabbitmqctl", "status"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
   # ============================================
   # МІКРОСЕРВІСИ
   # ============================================
 
-  auth-service:
+  backend:
     build:
-      context: ./auth
+      context: ./backend
       dockerfile: Dockerfile
       target: production
-    container_name: artsapp-auth-prod
+    container_name: artsapp-backend-prod
     restart: unless-stopped
     environment:
       NODE_ENV: production
-      PORT: 4000
+      PORT: ${BACKEND_PORT:-4000}
       PG_HOST: postgres
       PG_PORT: 5432
       PG_USER: postgres
@@ -102,8 +122,15 @@ services:
       JWT_ACCESS_SECRET: ${JWT_ACCESS_SECRET:-your-super-secret-access-key-change-in-production}
       JWT_RESRESH_SECRET: ${JWT_REFRESH_SECRET:-your-super-secret-refresh-key-change-in-production}
       CLIENT_BASE_URL: ${FRONTEND_URL:-http://localhost:3000}
+      FRONTEND_URL: ${FRONTEND_URL:-http://localhost:3000}
+      RABBITMQ_HOST: rabbitmq
+      RABBITMQ_PORT: 5672
+      RABBITMQ_USER: ${RABBITMQ_USER:-admin}
+      RABBITMQ_PASSWORD: ${RABBITMQ_PASSWORD:-1111}
+      RABBITMQ_EXCHANGE_NAME: Notification
+      DB_NAME: artsapp_sync
     ports:
-      - "4000:4000"
+      - "${BACKEND_PORT:-4000}:${BACKEND_PORT:-4000}"
     depends_on:
       postgres:
         condition: service_healthy
@@ -111,103 +138,47 @@ services:
         condition: service_healthy
       clickhouse:
         condition: service_healthy
+      rabbitmq:
+        condition: service_healthy
     networks:
       - artsapp-network
 
-  chat-service:
+  notifications:
     build:
-      context: ./chat
+      context: ./notifications
       dockerfile: Dockerfile
       target: production
-    container_name: artsapp-chat-prod
+    container_name: artsapp-notifications-prod
     restart: unless-stopped
     environment:
       NODE_ENV: production
-      PORT: 4001
+      PORT: ${NOTIFICATIONS_PORT:-4005}
       PG_HOST: postgres
       PG_PORT: 5432
       PG_USER: postgres
       PG_PASSWORD: ${PG_PASSWORD:-1111}
       PG_NAME: artsapp
       DB_TYPE: postgres
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
+      REDIS_PASSWORD: ${REDIS_PASSWORD:-1111}
+      RABBITMQ_HOST: rabbitmq
+      RABBITMQ_PORT: 5672
+      RABBITMQ_USER: ${RABBITMQ_USER:-admin}
+      RABBITMQ_PASSWORD: ${RABBITMQ_PASSWORD:-1111}
+      RABBITMQ_EXCHANGE_NAME: Notification
+      RABBITMQ_QUEUE_NAME: notifications
+      RABBITMQ_SERVICE_NAME: notifications
+      FRONTEND_URL: ${FRONTEND_URL:-http://localhost:3000}
       CLIENT_BASE_URL: ${FRONTEND_URL:-http://localhost:3000}
     ports:
-      - "4001:4001"
+      - "${NOTIFICATIONS_PORT:-4005}:${NOTIFICATIONS_PORT:-4005}"
     depends_on:
       postgres:
         condition: service_healthy
-    networks:
-      - artsapp-network
-
-  events-service:
-    build:
-      context: ./events
-      dockerfile: Dockerfile
-      target: production
-    container_name: artsapp-events-prod
-    restart: unless-stopped
-    environment:
-      NODE_ENV: production
-      PORT: 4002
-      PG_HOST: postgres
-      PG_PORT: 5432
-      PG_USER: postgres
-      PG_PASSWORD: ${PG_PASSWORD:-1111}
-      PG_NAME: artsapp
-      FRONTEND_URL: ${FRONTEND_URL:-http://localhost:3000}
-    ports:
-      - "4002:4002"
-    depends_on:
-      postgres:
+      redis:
         condition: service_healthy
-    networks:
-      - artsapp-network
-
-  fetch-service:
-    build:
-      context: ./fetch
-      dockerfile: Dockerfile
-      target: production
-    container_name: artsapp-fetch-prod
-    restart: unless-stopped
-    environment:
-      NODE_ENV: production
-      PORT: 4003
-      CLICKHOUSE_HOST: clickhouse
-      CLICKHOUSE_PORT: 8123
-      CLICKHOUSE_USER: ${CLICKHOUSE_USER:-clickhouse}
-      CLICKHOUSE_PASSWORD: ${CLICKHOUSE_PASSWORD:-1111}
-      CLICKHOUSE_DB: ${CLICKHOUSE_DB:-clickhouse}
-      DB_NAME: artsapp_sync
-      FRONTEND_URL: ${FRONTEND_URL:-http://localhost:3000}
-    ports:
-      - "4003:4003"
-    depends_on:
-      clickhouse:
-        condition: service_healthy
-    networks:
-      - artsapp-network
-
-  posts-service:
-    build:
-      context: ./posts
-      dockerfile: Dockerfile
-      target: production
-    container_name: artsapp-posts-prod
-    restart: unless-stopped
-    environment:
-      NODE_ENV: production
-      PORT: 4004
-      PG_HOST: postgres
-      PG_PORT: 5432
-      PG_USER: postgres
-      PG_PASSWORD: ${PG_PASSWORD:-1111}
-      PG_NAME: artsapp
-      FRONTEND_URL: ${FRONTEND_URL:-http://localhost:3000}
-    ports:
-      - "4004:4004"
-    depends_on:
-      postgres:
+      rabbitmq:
         condition: service_healthy
     networks:
       - artsapp-network
@@ -221,19 +192,11 @@ services:
     restart: unless-stopped
     environment:
       NODE_ENV: production
-      NEXT_PUBLIC_AUTH_URL: ${NEXT_PUBLIC_AUTH_URL:-http://localhost:4000}
-      NEXT_PUBLIC_CHAT_URL: ${NEXT_PUBLIC_CHAT_URL:-http://localhost:4001}
-      NEXT_PUBLIC_EVENTS_URL: ${NEXT_PUBLIC_EVENTS_URL:-http://localhost:4002}
-      NEXT_PUBLIC_FETCH_URL: ${NEXT_PUBLIC_FETCH_URL:-http://localhost:4003}
-      NEXT_PUBLIC_POSTS_URL: ${NEXT_PUBLIC_POSTS_URL:-http://localhost:4004}
+      NEXT_PUBLIC_API_URL: ${NEXT_PUBLIC_API_URL:-http://localhost:${BACKEND_PORT:-4000}}
     ports:
       - "3000:3000"
     depends_on:
-      - auth-service
-      - chat-service
-      - events-service
-      - fetch-service
-      - posts-service
+      - backend
     networks:
       - artsapp-network
 
@@ -252,4 +215,5 @@ volumes:
     driver: local
   clickhouse_data:
     driver: local
-
+  rabbitmq_data:
+    driver: local

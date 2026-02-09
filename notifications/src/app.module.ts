@@ -2,22 +2,23 @@ import { Module } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { RMQModule } from 'nestjs-rmq';
 import { MailerModule } from '@nestjs-modules/mailer';
+import config from './config';
 
 @Module({
   imports: [
     RMQModule.forRoot({
-      exchangeName: 'Notification',
+      exchangeName: config.rabbitmq.exchangeName,
       connections: [
         {
-          login: 'guest',
-          password: 'guest',
-          host: 'localhost',
-          port: 5672,
+          login: config.rabbitmq.user,
+          password: config.rabbitmq.password,
+          host: config.rabbitmq.host,
+          port: config.rabbitmq.port,
         },
       ],
-      queueName: 'notifications',
+      queueName: config.rabbitmq.queueName,
       prefetchCount: 32,
-      serviceName: 'notifications',
+      serviceName: config.rabbitmq.serviceName,
     }),
     MailerModule.forRoot({
       transport: {

@@ -233,6 +233,11 @@ echo "   - RabbitMQ Management UI: http://localhost:15672 (admin/1111)"
 echo "   - Перевірка RabbitMQ: docker exec rabbitmq rabbitmqctl status"
 echo ""
 echo "💡 Наступний крок: Запустіть ./setup-credentials.sh для налаштування .env файлів"
+echo ""
+echo "📌 Нова структура проекту:"
+echo "   - backend: об'єднаний сервіс (auth, chat, events, fetch, posts)"
+echo "   - frontend: Next.js додаток"
+echo "   - notifications: окремий мікросервіс для сповіщень"
 
 docker exec clickhouse clickhouse-client --query "SELECT * from artsapp_sync.events;"
 
