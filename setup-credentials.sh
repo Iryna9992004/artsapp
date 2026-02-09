@@ -21,7 +21,7 @@ REDIS_HOST="${REDIS_HOST:-127.0.0.1}"
 REDIS_PORT="${REDIS_PORT:-6379}"
 REDIS_PASSWORD="${REDIS_PASSWORD:-1111}"
 
-CLICKHOUSE_HOST="${CLICKHOUSE_HOST:-http://127.0.0.1:8123}"
+CLICKHOUSE_HOST="${CLICKHOUSE_HOST:-127.0.0.1}"
 CLICKHOUSE_USER="${CLICKHOUSE_USER:-clickhouse}"
 CLICKHOUSE_PASSWORD="${CLICKHOUSE_PASSWORD:-1111}"
 CLICKHOUSE_DB="${CLICKHOUSE_DB:-clickhouse}"
@@ -71,6 +71,8 @@ create_env_file "frontend" "$FRONTEND_ENV"
 
 # 2. Backend .env (об'єднаний сервіс з auth, chat, events, fetch, posts)
 echo "2️⃣  Створення backend/.env..."
+# DB_NAME для ClickHouse має бути artsapp_sync (реплікована база)
+CLICKHOUSE_DB_NAME="${DB_NAME}_sync"
 BACKEND_ENV="PORT=${BACKEND_PORT}
 
 # PostgreSQL
@@ -92,6 +94,9 @@ CLICKHOUSE_USER=${CLICKHOUSE_USER}
 CLICKHOUSE_PASSWORD=${CLICKHOUSE_PASSWORD}
 CLICKHOUSE_DB=${CLICKHOUSE_DB}
 
+# DB для fetch модуля (ClickHouse база з реплікацією)
+DB_NAME=${CLICKHOUSE_DB_NAME}
+
 # JWT
 JWT_ACCESS_SECRET=${JWT_ACCESS_SECRET}
 JWT_RESRESH_SECRET=${JWT_REFRESH_SECRET}
@@ -108,9 +113,6 @@ RABBITMQ_PORT=${RABBITMQ_PORT}
 RABBITMQ_USER=${RABBITMQ_USER}
 RABBITMQ_PASSWORD=${RABBITMQ_PASSWORD}
 RABBITMQ_EXCHANGE_NAME=Notification
-
-# DB для fetch модуля
-DB_NAME=${DB_NAME}_sync
 "
 create_env_file "backend" "$BACKEND_ENV"
 

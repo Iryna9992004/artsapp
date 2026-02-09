@@ -1,7 +1,7 @@
 import { Controller, Get, Query } from '@nestjs/common';
 import { FetchPostsUsecase } from '../application/fetch-posts.usecase';
 
-@Controller('posts')
+@Controller('fetch/posts')
 export class PostsController {
   constructor(private readonly fetchPostsUsecase: FetchPostsUsecase) {}
 

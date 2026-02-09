@@ -1,7 +1,7 @@
 import { Controller, Get, Query } from '@nestjs/common';
 import { GetEventUsecase } from '../application/get-event.usecase';
 
-@Controller('events')
+@Controller('fetch/events')
 export class EventsController {
   constructor(private readonly getEventUsecase: GetEventUsecase) {}
 

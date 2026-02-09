@@ -7,8 +7,8 @@ export class SearchTopicUsecase {
 
   async exec(limit: number, offset: number, searchText?: string) {
     const topics = await this.topicsRepository.search(
-      limit,
       offset,
+      limit,
       searchText,
     );
     return topics;

@@ -16,19 +16,20 @@ export async function fetchTopics(
   searchText?: string
 ) {
   try {
-    if (searchText) {
-      const response = await $apiFetch.get(
-        `/fetch/topic/?limit=${limit}&offset=${offset}&searchText=${searchText}`
-      );
-      return response.data;
-    } else {
-      const response = await $apiFetch.get(
-        `/fetch/topic/?limit=${limit}&offset=${offset}`
-      );
-      return response.data;
-    }
+    const url = searchText 
+      ? `/fetch/topic/?limit=${limit}&offset=${offset}&searchText=${searchText}`
+      : `/fetch/topic/?limit=${limit}&offset=${offset}`;
+    
+    console.log('Fetching topics from:', $apiFetch.defaults.baseURL + url);
+    const response = await $apiFetch.get(url);
+    console.log('Topics API response:', response.data);
+    console.log('Response type:', typeof response.data, 'Is array:', Array.isArray(response.data));
+    
+    // Ensure we return an array
+    const data = response.data;
+    return Array.isArray(data) ? data : [];
   } catch (e) {
-    console.error(e);
+    console.error('Error fetching topics:', e);
     throw e;
   }
 }

@@ -9,22 +9,39 @@ import Loader from "@/components/ui/loader";
 export default function TopicsList({ searchText }: TopicsListProps) {
   const [lastIndex, setLastIndex] = useState(0);
   const { isLoading, topics, hasMore } = useTopics(lastIndex, 10, searchText);
+  const isLoadingRef = React.useRef(false);
+  const lastIncrementRef = React.useRef<number>(0);
+
+  // Update ref when isLoading changes
+  React.useEffect(() => {
+    isLoadingRef.current = isLoading;
+  }, [isLoading]);
 
   const trackingRef = useOnInView(
-    (inView) => {
-      if (inView && !isLoading && hasMore) {
-        setLastIndex((prev) => prev + 10);
+    React.useCallback((inView: boolean) => {
+      if (inView && !isLoadingRef.current && hasMore) {
+        const now = Date.now();
+        // Throttle: only increment if last increment was more than 500ms ago
+        if (now - lastIncrementRef.current > 500) {
+          lastIncrementRef.current = now;
+          setLastIndex((prev) => {
+            const next = prev + 10;
+            return next;
+          });
+        }
       }
-    },
+    }, [hasMore]),
     {
       threshold: 0.5,
       triggerOnce: false,
+      rootMargin: '100px', // Start loading earlier
     }
   );
 
   // Reset offset when searchText changes or component remounts
   useEffect(() => {
     setLastIndex(0);
+    lastIncrementRef.current = 0;
   }, [searchText]);
 
   if (isLoading && topics.length === 0) {

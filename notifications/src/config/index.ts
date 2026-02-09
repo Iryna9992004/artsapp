@@ -1,5 +1,19 @@
 import * as dotenv from 'dotenv';
-dotenv.config();
+import * as path from 'path';
+
+// Завантажуємо .env файл з кореня notifications папки
+// Спочатку пробуємо з поточної директорії (для запуску з кореня проекту)
+dotenv.config({ path: path.resolve(process.cwd(), 'notifications/.env') });
+
+// Якщо не знайдено, пробуємо з кореня notifications папки
+if (!process.env.RABBITMQ_HOST) {
+  dotenv.config({ path: path.resolve(__dirname, '../../.env') });
+}
+
+// Якщо все ще не знайдено, використовуємо стандартний шлях
+if (!process.env.RABBITMQ_HOST) {
+  dotenv.config();
+}
 
 interface Config {
   base: {
@@ -46,5 +60,16 @@ const config: Config = {
     serviceName: process.env.RABBITMQ_SERVICE_NAME || 'notifications',
   },
 };
+
+// Логування для діагностики (тільки в режимі розробки)
+if (process.env.NODE_ENV !== 'production') {
+  console.log('🔧 RabbitMQ Config:', {
+    host: config.rabbitmq.host,
+    port: config.rabbitmq.port,
+    user: config.rabbitmq.user,
+    password: config.rabbitmq.password ? '***' : 'NOT SET',
+    exchangeName: config.rabbitmq.exchangeName,
+  });
+}
 
 export default config;

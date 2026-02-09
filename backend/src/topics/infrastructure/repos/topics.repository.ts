@@ -10,6 +10,10 @@ export class TopicRepositoryClickhouse implements TopicRepository {
 
   async search(offset: number, limit: number, text?: string): Promise<Topic[]> {
     try {
+      if (!config.db.name) {
+        throw new Error('DB_NAME is not configured. Please set DB_NAME environment variable.');
+      }
+
       let query = `
       SELECT 
         t.id AS id,
@@ -48,9 +52,15 @@ export class TopicRepositoryClickhouse implements TopicRepository {
       });
 
       const topics = await rows.json<Topic>();
-      return topics;
+      console.log('ClickHouse topics result:', topics);
+      console.log('Topics type:', typeof topics, 'Is array:', Array.isArray(topics));
+      
+      // Ensure we return an array
+      return Array.isArray(topics) ? topics : [];
     } catch (e) {
       console.error('Error searching topics:', e);
+      console.error('Config DB name:', config.db.name);
+      console.error('ClickHouse URL:', config.clickhouse.url);
       throw e;
     }
   }
