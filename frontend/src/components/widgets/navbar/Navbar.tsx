@@ -44,12 +44,16 @@ export default function Navbar() {
       pathname === "/events/create"
     )
       return true;
-    if (searchParams.toString().length === 0) return false;
-
-    return mainPaths.some(
-      (p) => pathname === p || pathname.startsWith(p + "/")
+    
+    // Check if pathname matches main paths (ignore query params)
+    const pathWithoutQuery = pathname?.split('?')[0] || pathname;
+    const matchesMainPath = mainPaths.some(
+      (p) => pathWithoutQuery === p || pathWithoutQuery?.startsWith(p + "/")
     );
-  }, [searchParams, pathname]);
+    
+    // Show navbar if it matches main paths, regardless of query params
+    return matchesMainPath;
+  }, [pathname]);
 
   const isCreatePage = useMemo(() => {
     if (!pathname) return false;
@@ -71,7 +75,7 @@ export default function Navbar() {
           />
         ) : null}
         <h1 className="text-white font-bold text-2xl">
-          {pathnames[pathname as never] || searchParams.get("title")}
+          {pathnames[pathname?.split('?')[0] as never] || searchParams.get("title") || "ArtsApp"}
         </h1>
       </div>
 
