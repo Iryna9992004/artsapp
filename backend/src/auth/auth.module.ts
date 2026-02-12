@@ -18,5 +18,6 @@ import { UserRepositoryPostgres } from './infrastructure/repos/user.repository';
     LogoutUsecase,
   ],
   imports: [RedisdbModule, PgModule],
+  exports: [UserRepositoryPostgres],
 })
 export class AuthModule {}

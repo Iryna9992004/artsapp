@@ -11,9 +11,11 @@ import { ReadMessageRepositoryPostgres } from './infrastructure/repos/read.messa
 import { CreateMessageUsecase } from './application/create.message.usecase';
 import { ReadMessageUsecase } from './application/read.message.usecase';
 import { GetMessagesUsecase } from './application/get.messages.usecase';
+import { UserRepositoryPostgres } from 'src/auth/infrastructure/repos/user.repository';
+import { AuthModule } from 'src/auth/auth.module';
 
 @Module({
-  imports: [PgModule],
+  imports: [PgModule, AuthModule],
   providers: [
     TopicRepositoryPostgres,
     TopicReadRepositoryPostgres,

@@ -7,16 +7,68 @@ export class AppController {
   constructor(private readonly mailerService: MailerService) {}
 
   @RMQRoute('notify')
-  async sendTestEmail(data: { title: string; description: string; email: string }) {
+  async sendTestEmail(data: { type?: string; title: string; description: string; email: string }) {
     try {
       console.log('Received notification:', data);
-      const htmlTemplate = `
+      
+      // Get template based on notification type
+      const template = this.getEmailTemplate(data.type || 'default', data.title, data.description);
+      
+      const res = await this.mailerService.sendMail({
+        to: data.email || 'iren171302@gmail.com',
+        subject: data.title || 'Notification from ArtsApp',
+        html: template,
+      });
+
+      console.log('Email sent successfully:', res);
+      return res;
+    } catch (error) {
+      console.error('Failed to send email:', error);
+      throw error;
+    }
+  }
+
+  private getIconForType(type: string): string {
+    switch (type) {
+      case 'topic':
+        return '💬';
+      case 'message':
+        return '✉️';
+      case 'post':
+        return '📝';
+      case 'event':
+        return '🎭';
+      default:
+        return '🎵';
+    }
+  }
+
+  private getHeaderTextForType(type: string): string {
+    switch (type) {
+      case 'topic':
+        return 'Нова тема створена';
+      case 'message':
+        return 'Повідомлення відправлено';
+      case 'post':
+        return 'Нова публікація створена';
+      case 'event':
+        return 'Нова подія створена';
+      default:
+        return 'Сповіщення від ArtsApp';
+    }
+  }
+
+  private getEmailTemplate(type: string, title: string, description: string): string {
+    const icon = this.getIconForType(type);
+    const headerText = this.getHeaderTextForType(type);
+    
+    return `
       <!DOCTYPE html>
       <html lang="uk">
       <head>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>${data.title}</title>
+        <title>${title}</title>
         <style>
           * {
             margin: 0;
@@ -25,7 +77,7 @@ export class AppController {
           }
           body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
-            background: linear-gradient(135deg, #ff6b6b 0%, #ee5a6f 25%, #c44569 50%, #a55eea 75%, #8854d0 100%);
+            background: linear-gradient(135deg, #f8f9ff 0%, #f0f2ff 50%, #e8ebff 100%);
             background-attachment: fixed;
             padding: 40px 20px;
             line-height: 1.6;
@@ -36,14 +88,15 @@ export class AppController {
           }
           .email-container {
             background: #ffffff;
-            border-radius: 24px;
+            border-radius: 20px;
             overflow: hidden;
-            box-shadow: 0 25px 80px rgba(0, 0, 0, 0.25), 0 10px 30px rgba(0, 0, 0, 0.15);
+            box-shadow: 0 10px 40px rgba(30, 37, 177, 0.1), 0 4px 12px rgba(115, 74, 215, 0.08);
             position: relative;
+            border: 1px solid rgba(30, 37, 177, 0.08);
           }
           .email-header {
-            background: linear-gradient(135deg, #ff6b6b 0%, #ee5a6f 20%, #c44569 40%, #a55eea 60%, #8854d0 80%, #6c5ce7 100%);
-            padding: 50px 30px 60px;
+            background: linear-gradient(135deg, #1E25B1 0%, #734AD7 50%, #FF45EC 100%);
+            padding: 48px 32px 52px;
             text-align: center;
             color: #ffffff;
             position: relative;
@@ -76,34 +129,34 @@ export class AppController {
           .icon-wrapper {
             position: relative;
             z-index: 1;
-            margin: 0 auto 20px;
+            margin: 0 auto 24px;
             text-align: center;
           }
           .icon {
-            font-size: 70px;
+            font-size: 64px;
             display: inline-block;
-            filter: drop-shadow(0 4px 12px rgba(0, 0, 0, 0.3));
+            filter: drop-shadow(0 4px 12px rgba(0, 0, 0, 0.2));
           }
           .email-header h1 {
-            font-size: 32px;
+            font-size: 36px;
             font-weight: 800;
-            margin-bottom: 8px;
-            letter-spacing: -1px;
-            text-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+            margin-bottom: 10px;
+            letter-spacing: -0.5px;
+            text-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
             position: relative;
             z-index: 1;
           }
           .email-header .subtitle {
-            opacity: 0.95;
-            font-size: 15px;
+            opacity: 0.92;
+            font-size: 16px;
             font-weight: 500;
-            letter-spacing: 0.5px;
+            letter-spacing: 0.3px;
             position: relative;
             z-index: 1;
           }
           .email-body {
-            padding: 50px 40px;
-            color: #333333;
+            padding: 48px 40px;
+            color: #1a1a1a;
             background: #ffffff;
             position: relative;
           }
@@ -113,122 +166,86 @@ export class AppController {
             top: 0;
             left: 0;
             right: 0;
-            height: 5px;
-            background: linear-gradient(90deg, #ff6b6b, #ee5a6f, #c44569, #a55eea, #8854d0, #6c5ce7);
+            height: 3px;
+            background: linear-gradient(90deg, #1E25B1, #734AD7, #FF45EC);
           }
           .email-body h2 {
-            font-size: 28px;
+            font-size: 26px;
             font-weight: 700;
             color: #1a1a1a;
             margin-bottom: 20px;
-            line-height: 1.3;
-            background: linear-gradient(135deg, #ff6b6b 0%, #ee5a6f 30%, #a55eea 70%, #6c5ce7 100%);
+            line-height: 1.4;
+            background: linear-gradient(135deg, #1E25B1 0%, #734AD7 50%, #FF45EC 100%);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
           }
           .email-body .content {
-            font-size: 17px;
+            font-size: 16px;
             color: #4a5568;
-            margin-bottom: 30px;
-            line-height: 1.8;
+            margin-bottom: 32px;
+            line-height: 1.7;
             font-weight: 400;
           }
           .divider {
-            height: 2px;
-            background: linear-gradient(90deg, transparent, #ff6b6b 20%, #a55eea 50%, #ff6b6b 80%, transparent);
-            margin: 35px 0;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, rgba(30, 37, 177, 0.2) 20%, rgba(115, 74, 215, 0.3) 50%, rgba(255, 69, 236, 0.2) 80%, transparent);
+            margin: 32px 0;
             position: relative;
-            border-radius: 2px;
-          }
-          .divider::before {
-            content: '✨';
-            position: absolute;
-            left: 50%;
-            top: 50%;
-            transform: translate(-50%, -50%);
-            background: linear-gradient(135deg, #fff5f5, #ffffff);
-            padding: 0 18px;
-            font-size: 20px;
-            filter: drop-shadow(0 2px 4px rgba(255, 107, 107, 0.2));
+            border-radius: 1px;
           }
           .info-box {
-            background: linear-gradient(135deg, #fff5f5 0%, #ffe8e8 50%, #ffe0e0 100%);
-            border-left: 5px solid;
-            border-image: linear-gradient(180deg, #ff6b6b, #a55eea) 1;
-            padding: 22px;
-            border-radius: 12px;
-            margin: 25px 0;
-            box-shadow: 0 4px 15px rgba(255, 107, 107, 0.1);
+            background: #f8f9ff;
+            border-left: 4px solid #734AD7;
+            padding: 20px 24px;
+            border-radius: 10px;
+            margin: 28px 0;
+            box-shadow: 0 2px 8px rgba(30, 37, 177, 0.08);
           }
           .info-box p {
             font-size: 14px;
             color: #5a5568;
             margin: 0;
-            line-height: 1.7;
-            font-weight: 500;
+            line-height: 1.6;
+            font-weight: 400;
           }
           .email-footer {
-            background: linear-gradient(180deg, #fef5f5 0%, #ffe8e8 50%, #f8f0f0 100%);
-            padding: 35px 30px;
+            background: #f8f9ff;
+            padding: 32px 30px;
             text-align: center;
-            border-top: 2px solid;
-            border-image: linear-gradient(90deg, #ff6b6b, #a55eea) 1;
+            border-top: 1px solid rgba(30, 37, 177, 0.1);
             position: relative;
           }
           .footer-logo {
-            font-size: 22px;
+            font-size: 24px;
             font-weight: 800;
-            background: linear-gradient(135deg, #ff6b6b 0%, #ee5a6f 30%, #a55eea 70%, #6c5ce7 100%);
+            background: linear-gradient(135deg, #1E25B1 0%, #734AD7 50%, #FF45EC 100%);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
             margin-bottom: 8px;
           }
           .email-footer p {
-            font-size: 14px;
+            font-size: 15px;
             color: #6c757d;
-            margin: 6px 0;
-          }
-          .social-icons {
-            margin: 20px 0 15px;
-            display: flex;
-            justify-content: center;
-            gap: 15px;
-          }
-          .social-icon {
-            width: 45px;
-            height: 45px;
-            background: linear-gradient(135deg, #ff6b6b 0%, #ee5a6f 50%, #a55eea 100%);
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: #ffffff;
-            font-size: 20px;
-            text-decoration: none;
-            box-shadow: 0 6px 20px rgba(255, 107, 107, 0.4), 0 2px 8px rgba(165, 94, 234, 0.3);
-            transition: all 0.3s ease;
-          }
-          .social-icon:hover {
-            transform: translateY(-3px) scale(1.1);
-            box-shadow: 0 8px 25px rgba(255, 107, 107, 0.5), 0 4px 12px rgba(165, 94, 234, 0.4);
+            margin: 4px 0;
+            font-weight: 400;
           }
           .copyright {
-            font-size: 12px;
-            margin-top: 20px;
-            color: #adb5bd;
-            padding-top: 15px;
-            border-top: 1px solid #e9ecef;
+            font-size: 13px;
+            margin-top: 24px;
+            color: #9ca3af;
+            padding-top: 20px;
+            border-top: 1px solid rgba(30, 37, 177, 0.08);
           }
           .decorative-dots {
             position: absolute;
-            top: 20px;
-            right: 20px;
-            opacity: 0.15;
-            font-size: 65px;
+            top: 24px;
+            right: 24px;
+            opacity: 0.1;
+            font-size: 56px;
             line-height: 1;
-            filter: drop-shadow(0 4px 8px rgba(255, 255, 255, 0.3));
+            filter: drop-shadow(0 2px 4px rgba(255, 255, 255, 0.2));
           }
           @media only screen and (max-width: 600px) {
             body {
@@ -261,15 +278,15 @@ export class AppController {
             <div class="email-header">
               <div class="decorative-dots">🎵🎶🎼</div>
               <div class="icon-wrapper">
-                <span class="icon">🎵</span>
+                <span class="icon">${icon}</span>
               </div>
               <h1>ArtsApp</h1>
-              <p class="subtitle">Музична платформа нового покоління</p>
+              <p class="subtitle">${headerText}</p>
             </div>
             
             <div class="email-body">
-              <h2>${data.title}</h2>
-              <div class="content">${data.description}</div>
+              <h2>${title}</h2>
+              <div class="content">${description}</div>
               
               <div class="divider"></div>
               
@@ -280,14 +297,7 @@ export class AppController {
             
             <div class="email-footer">
               <div class="footer-logo">ArtsApp</div>
-              <p style="font-weight: 500; color: #495057;">Ваша музична спільнота</p>
-              
-              <div class="social-icons">
-                <a href="#" class="social-icon">📱</a>
-                <a href="#" class="social-icon">🌐</a>
-                <a href="#" class="social-icon">📧</a>
-              </div>
-              
+              <p>Ваша музична спільнота</p>
               <p class="copyright">
                 © ${new Date().getFullYear()} ArtsApp. Всі права захищені.
               </p>
@@ -297,18 +307,5 @@ export class AppController {
       </body>
       </html>
     `;
-
-      const res = await this.mailerService.sendMail({
-        to: data.email || 'iren171302@gmail.com',
-        subject: data.title || 'Welcome to ArtsApp!',
-        html: htmlTemplate,
-      });
-
-      console.log('Email sent successfully:', res);
-      return res;
-    } catch (error) {
-      console.error('Failed to send email:', error);
-      throw error; // Перекидаємо помилку, щоб RMQ міг обробити її
-    }
   }
 }
