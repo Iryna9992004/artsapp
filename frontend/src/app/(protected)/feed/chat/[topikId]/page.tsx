@@ -25,6 +25,7 @@ export default function Page() {
     handleSubmit,
     setValue,
     getValues,
+    watch,
     formState: { isValid },
   } = useForm<SendInputFormInputs>({
     resolver: zodResolver(sendFormValidationSchema),
@@ -35,6 +36,9 @@ export default function Page() {
 
   const { messages, isLoading: isLoadingMessages } = useFetchMessages(topikId);
   const { isLoading: isSending, send } = useSendMessage(topikId, userId ?? 0);
+  
+  // Використовуємо watch для реактивного відстеження значення форми
+  const textValue = watch("text");
 
   const submit = async () => {
     if (!isValid) return;
@@ -55,7 +59,7 @@ export default function Page() {
     <div className="p-2 max-h-[90vh] overflow-y-auto">
       <MessagesList data={messages} />
       <form onSubmit={handleSubmit(submit)}>
-        <SendForm register={register("text")} value={getValues("text")} disabled={isSending} />
+        <SendForm register={register("text")} value={textValue || ""} disabled={isSending} />
       </form>
     </div>
   );

@@ -11,6 +11,8 @@ export default function SearchInput({ setValue }: SearchInputProps) {
     register,
     handleSubmit,
     getValues,
+    reset,
+    watch,
     formState: { isValid },
   } = useForm<SearchInputFormInputs>({
     resolver: zodResolver(searchInputValidationSchema),
@@ -19,28 +21,57 @@ export default function SearchInput({ setValue }: SearchInputProps) {
     },
   });
 
+  const searchText = watch("text");
+  const hasText = searchText && searchText.length > 0;
+
   const submit = () => {
     if (!isValid) return;
     const value = getValues("text");
     setValue(value);
   };
+
+  const clearSearch = () => {
+    reset({ text: "" });
+    setValue(undefined);
+  };
+
   return (
     <div className="sticky top-0 left-0 right-0 py-2 px-6 w-full flex justify-center bg-black/80 z-1000">
       <form
         className="flex rounded-md border-2 border-blue-500 overflow-hidden w-full"
         onSubmit={handleSubmit(submit)}
       >
-        <input
-          {...register("text")}
-          placeholder="Search Something..."
-          className="w-full outline-none bg-gray-600/50 text-white px-4 py-3 hover:bg-gray-600/20 focus:bg-gray-600/20 transtion duration-300 text-md"
-        />
+        <div className="flex-1 relative">
+          <input
+            {...register("text")}
+            placeholder="Search Something..."
+            className="w-full outline-none bg-gray-600/50 text-white px-4 py-3 pr-10 hover:bg-gray-600/20 focus:bg-gray-600/20 transtion duration-300 text-md"
+          />
+          {hasText && (
+            <button
+              type="button"
+              onClick={clearSearch}
+              aria-label="Clear search"
+              className="absolute right-2 top-1/2 -translate-y-1/2 p-1.5 rounded-full hover:bg-gray-500/50 transition duration-150 flex items-center justify-center"
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                viewBox="0 0 24 24"
+                width="16px"
+                height="16px"
+                className="fill-white"
+              >
+                <path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z" />
+              </svg>
+            </button>
+          )}
+        </div>
         <button
           type="submit"
-          area-label="search"
+          aria-label="search"
           name="search"
-          disabled={!getValues("text")}
-          className="flex items-center justify-center bg-[#007bff] px-5 cursor-pointer hover:bg-blue-700 transition duration-150 disabled:cursor-not-allowed"
+          disabled={!hasText}
+          className="flex items-center justify-center bg-[#007bff] px-5 cursor-pointer hover:bg-blue-700 transition duration-150 disabled:cursor-not-allowed disabled:opacity-50"
         >
           <svg
             xmlns="http://www.w3.org/2000/svg"

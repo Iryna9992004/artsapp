@@ -15,7 +15,7 @@ export function useCreateEvent(user_id: number | undefined) {
     }
     setIsLoading(true);
     try {
-      const response = await createEvent(title, description, String(user_id));
+      const response = await createEvent(title, description, user_id);
       if (response) {
         toast.success("Event created successfully!");
         router.push('/events');

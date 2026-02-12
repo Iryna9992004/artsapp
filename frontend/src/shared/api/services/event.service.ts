@@ -3,13 +3,13 @@ import { $apiEvent, $apiFetch } from "../axios";
 export async function createEvent(
   title: string,
   event_description: string,
-  user_id: string
+  user_id: number | string
 ) {
   try {
     const response = await $apiEvent.post("/events", {
       title,
       event_description,
-      user_id,
+      user_id: Number(user_id), // Конвертуємо в число для бекенду
     });
     return response.data;
   } catch (e) {
