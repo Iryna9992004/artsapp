@@ -19,8 +19,8 @@ export async function createEvent(
 }
 
 export async function fetchEvents(
-  limit: number,
   offset: number,
+  limit: number,
   searchText?: string
 ) {
   try {

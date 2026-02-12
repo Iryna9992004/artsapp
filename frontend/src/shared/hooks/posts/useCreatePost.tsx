@@ -18,8 +18,15 @@ export function useCreatePost(user_id: number | undefined) {
       const response = await createPost(title, description, user_id);
       if (response) {
         toast.success("Post created successfully!");
-        router.push("/posts");
-        router.refresh();
+        // Mark that we just created a post (for refresh trigger)
+        if (typeof window !== 'undefined') {
+          sessionStorage.setItem('postCreated', Date.now().toString());
+        }
+        // Add delay to allow replication from PostgreSQL to ClickHouse
+        // ClickHouse replication usually takes 1-2 seconds
+        await new Promise(resolve => setTimeout(resolve, 2000));
+        // Navigate to posts without any query params
+        router.replace("/posts");
       }
     } catch (e) {
       if (e instanceof AxiosError) {

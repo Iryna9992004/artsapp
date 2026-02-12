@@ -19,6 +19,10 @@ export function useCreateTopic(user_id: number | undefined) {
       const response = await createTopicService(text, String(user_id));
       if (response) {
         toast.success("Topic was created successfully");
+        // Mark that we just created a topic (for refresh trigger)
+        if (typeof window !== 'undefined') {
+          sessionStorage.setItem('topicCreated', Date.now().toString());
+        }
         // Add delay to allow replication from PostgreSQL to ClickHouse
         // ClickHouse replication usually takes 1-2 seconds
         await new Promise(resolve => setTimeout(resolve, 2000));

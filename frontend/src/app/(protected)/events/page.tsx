@@ -1,22 +1,62 @@
 "use client";
 import EventsList from "@/components/features/events-list";
 import SearchInput from "@/components/features/search-input";
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
+import { usePathname } from "next/navigation";
 
 export default function Events() {
   const [searchText, setSearchText] = useState<string | undefined>(undefined);
   const [refreshKey, setRefreshKey] = useState(0);
+  const pathname = usePathname();
+  const lastRefreshRef = useRef<number>(0);
 
-  // Refresh list when page becomes visible or focused
+  // Refresh list when navigating to /events after creating an event
+  useEffect(() => {
+    if (pathname === '/events') {
+      // Check if we just created an event using sessionStorage
+      const eventCreated = typeof window !== 'undefined' 
+        ? sessionStorage.getItem('eventCreated') 
+        : null;
+      
+      if (eventCreated) {
+        const createdTime = parseInt(eventCreated, 10);
+        const now = Date.now();
+        // Only refresh if event was created recently (within last 5 seconds)
+        if (now - createdTime < 5000 && now - lastRefreshRef.current > 1000) {
+          lastRefreshRef.current = now;
+          // Clear the flag
+          sessionStorage.removeItem('eventCreated');
+          // Small delay to ensure component is mounted and replication is complete
+          const timer = setTimeout(() => {
+            setRefreshKey(prev => prev + 1);
+          }, 500);
+          return () => clearTimeout(timer);
+        } else if (now - createdTime >= 5000) {
+          // Clean up old flag
+          sessionStorage.removeItem('eventCreated');
+        }
+      }
+    }
+  }, [pathname]);
+
+  // Refresh list when page becomes visible or focused (with throttling)
   useEffect(() => {
     const handleVisibilityChange = () => {
       if (document.visibilityState === 'visible') {
-        setRefreshKey(prev => prev + 1);
+        const now = Date.now();
+        if (now - lastRefreshRef.current > 2000) {
+          lastRefreshRef.current = now;
+          setRefreshKey(prev => prev + 1);
+        }
       }
     };
 
     const handleFocus = () => {
-      setRefreshKey(prev => prev + 1);
+      const now = Date.now();
+      if (now - lastRefreshRef.current > 2000) {
+        lastRefreshRef.current = now;
+        setRefreshKey(prev => prev + 1);
+      }
     };
 
     document.addEventListener('visibilitychange', handleVisibilityChange);

@@ -11,7 +11,6 @@ export default function Feed() {
   const [debouncedSearchText, setDebouncedSearchText] = useState<string | undefined>();
   const [refreshKey, setRefreshKey] = useState(0);
   const pathname = usePathname();
-  const prevPathnameRef = useRef<string | null>(null);
   const lastRefreshRef = useRef<number>(0);
 
   // Debounce search text to avoid too many requests
@@ -23,23 +22,33 @@ export default function Feed() {
     return () => clearTimeout(timer);
   }, [searchText]);
 
-  // Refresh list when navigating to /feed from /feed/create (e.g., after creating a topic)
+  // Refresh list when navigating to /feed after creating a topic
   useEffect(() => {
-    // Check if we're coming from /feed/create to /feed
-    if (pathname === '/feed' && prevPathnameRef.current === '/feed/create') {
-      const now = Date.now();
-      // Throttle: only refresh if last refresh was more than 1 second ago
-      if (now - lastRefreshRef.current > 1000) {
-        lastRefreshRef.current = now;
-        // Small delay to ensure component is mounted and replication is complete
-        const timer = setTimeout(() => {
-          setRefreshKey(prev => prev + 1);
-        }, 500);
-        return () => clearTimeout(timer);
+    if (pathname === '/feed') {
+      // Check if we just created a topic using sessionStorage
+      const topicCreated = typeof window !== 'undefined' 
+        ? sessionStorage.getItem('topicCreated') 
+        : null;
+      
+      if (topicCreated) {
+        const createdTime = parseInt(topicCreated, 10);
+        const now = Date.now();
+        // Only refresh if topic was created recently (within last 5 seconds)
+        if (now - createdTime < 5000 && now - lastRefreshRef.current > 1000) {
+          lastRefreshRef.current = now;
+          // Clear the flag
+          sessionStorage.removeItem('topicCreated');
+          // Small delay to ensure component is mounted and replication is complete
+          const timer = setTimeout(() => {
+            setRefreshKey(prev => prev + 1);
+          }, 500);
+          return () => clearTimeout(timer);
+        } else if (now - createdTime >= 5000) {
+          // Clean up old flag
+          sessionStorage.removeItem('topicCreated');
+        }
       }
     }
-    // Update previous pathname
-    prevPathnameRef.current = pathname;
   }, [pathname]);
 
   // Optional: Refresh list when page becomes visible (with throttling)

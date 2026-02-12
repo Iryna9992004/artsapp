@@ -18,8 +18,15 @@ export function useCreateEvent(user_id: number | undefined) {
       const response = await createEvent(title, description, user_id);
       if (response) {
         toast.success("Event created successfully!");
-        router.push('/events');
-        router.refresh();
+        // Mark that we just created an event (for refresh trigger)
+        if (typeof window !== 'undefined') {
+          sessionStorage.setItem('eventCreated', Date.now().toString());
+        }
+        // Add delay to allow replication from PostgreSQL to ClickHouse
+        // ClickHouse replication usually takes 1-2 seconds
+        await new Promise(resolve => setTimeout(resolve, 2000));
+        // Navigate to events without any query params
+        router.replace('/events');
       }
     } catch (e) {
       if (e instanceof AxiosError) {
