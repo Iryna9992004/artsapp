@@ -7,33 +7,44 @@ import config from 'src/shared/config';
 export class RefreshUsecase {
   constructor(private redisService: RedisdbService) {}
 
-  async execute(userSessionId: string) {
-    const foundSession = await this.redisService.getValue(userSessionId);
-    if (!foundSession) {
-      throw new UnauthorizedException('Session expired');
+  async execute(refreshToken: string) {
+    if (!refreshToken) {
+      throw new UnauthorizedException('Refresh token is required');
     }
 
-    const decodedToken = jwt.verify(foundSession, config.jwt.refresh_secret);
+    let decodedToken: any;
+    try {
+      decodedToken = jwt.verify(refreshToken, config.jwt.refresh_secret);
+    } catch (error) {
+      throw new UnauthorizedException('Invalid refresh token');
+    }
 
-    if (!decodedToken) {
-      throw new UnauthorizedException('Session expired');
+    if (!decodedToken || !decodedToken.id) {
+      throw new UnauthorizedException('Invalid token payload');
     }
 
     const { id, full_name, email } = decodedToken;
+
+    // Verify that the token exists in Redis
+    const storedToken = await this.redisService.getValue(`user:${id}`);
+    if (!storedToken || storedToken !== refreshToken) {
+      throw new UnauthorizedException('Session expired or invalid');
+    }
 
     const accessToken = jwt.sign(
       { id, full_name, email },
       config.jwt.access_secret,
       { expiresIn: '15m' },
     );
-    const refreshToken = jwt.sign(
+    const newRefreshToken = jwt.sign(
       { id, full_name, email },
       config.jwt.refresh_secret,
       { expiresIn: '2h' },
     );
 
-    await this.redisService.setValue(userSessionId, refreshToken);
+    // Update refresh token in Redis using user ID
+    await this.redisService.setValue(`user:${id}`, newRefreshToken);
 
-    return { accessToken, userSessionId, user: { id, full_name, email } };
+    return { accessToken, refreshToken: newRefreshToken, user: { id, full_name, email } };
   }
 }

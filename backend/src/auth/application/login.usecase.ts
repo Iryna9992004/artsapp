@@ -13,7 +13,7 @@ export class LoginUsecase {
     private readonly redisService: RedisdbService,
   ) {}
 
-  async exec(userAgent: string, user: User) {
+  async exec(user: User) {
     const foundUser = await this.userRepositoryPostgres.findByEmail(user.email);
 
     if (!foundUser) {
@@ -38,7 +38,8 @@ export class LoginUsecase {
       { expiresIn: '2h' },
     );
 
-    await this.redisService.setValue(userAgent, refreshToken);
-    return { accessToken, user: { id, email, full_name } };
+    // Use user ID as key in Redis instead of session ID
+    await this.redisService.setValue(`user:${id}`, refreshToken);
+    return { accessToken, refreshToken, user: { id, email, full_name } };
   }
 }

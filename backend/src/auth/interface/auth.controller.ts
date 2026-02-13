@@ -1,10 +1,9 @@
-import { Controller, Get, Param, Post, Req, Res } from '@nestjs/common';
+import { Body, Controller, Post, Req, Res } from '@nestjs/common';
 import { RegisterUsecase } from '../application/register.usecase';
 import { Request, Response } from 'express';
 import { LoginUsecase } from '../application/login.usecase';
 import { RefreshUsecase } from '../application/refresh.usecase';
 import { LogoutUsecase } from '../application/logout.usecase';
-import * as uuid from 'uuid';
 
 @Controller('auth')
 export class AuthController {
@@ -17,29 +16,27 @@ export class AuthController {
 
   @Post('register')
   async register(@Req() request: Request, @Res() response: Response) {
-    const userSessionId = uuid.v4();
-    const res = await this.registerUsecase.exec(userSessionId, request.body);
-    return response.json({ ...res.user, userSessionId });
+    const res = await this.registerUsecase.exec(request.body);
+    return response.json(res);
   }
 
   @Post('login')
   async login(@Req() request: Request, @Res() response: Response) {
-    const userSessionId = uuid.v4();
-    const res = await this.loginUsecase.exec(`${userSessionId}`, request.body);
-    return response.json({ ...res.user, userSessionId });
+    const res = await this.loginUsecase.exec(request.body);
+    return response.json(res);
   }
 
-  @Get('/refresh/:userSessionId')
-  async refresh(@Param('userSessionId') userSessionId: string) {
-    return this.refreshUsecase.execute(userSessionId);
+  @Post('refresh')
+  async refresh(@Body('refreshToken') refreshToken: string) {
+    return this.refreshUsecase.execute(refreshToken);
   }
 
-  @Get('/logout/:userSessionId')
+  @Post('logout')
   async logout(
-    @Param('userSessionId') userSessionId: string,
+    @Body('refreshToken') refreshToken: string,
     @Res() response: Response,
   ) {
-    const res = await this.logoutUsecase.execute(userSessionId);
+    const res = await this.logoutUsecase.execute(refreshToken);
     return response.json(res);
   }
 }
