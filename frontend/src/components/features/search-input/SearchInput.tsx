@@ -29,10 +29,10 @@ export default function SearchInput({ setValue }: SearchInputProps) {
     const value = getValues("text");
     setValue(value);
   };
-
   const clearSearch = () => {
     reset({ text: "" });
-    setValue(undefined);
+    // Передаємо порожній рядок, щоб скинути пошук без порушення типів
+    setValue("");
   };
 
   return (
