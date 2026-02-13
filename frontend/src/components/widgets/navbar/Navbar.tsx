@@ -17,23 +17,32 @@ export default function Navbar() {
   };
 
   const handleLogout = async () => {
-    const userSessionId = localStorage.getItem("userSessionId");
-    if (!userSessionId) {
+    const refreshToken = localStorage.getItem("refreshToken");
+    if (!refreshToken) {
       router.replace("/login");
+      return;
     }
     try {
-      const response = await fetch(`/api/auth/logout/${userSessionId}`, {
-        method: "GET",
+      const response = await fetch("/api/auth/logout", {
+        method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
+        body: JSON.stringify({ refreshToken }),
       });
       if (response.ok) {
-        localStorage.removeItem("userSessionId");
+        localStorage.removeItem("refreshToken");
+        localStorage.removeItem("accessToken");
+        localStorage.removeItem("user_id");
         router.replace("/login");
       }
     } catch (e) {
       console.error(e);
+      // Clear local storage even if request fails
+      localStorage.removeItem("refreshToken");
+      localStorage.removeItem("accessToken");
+      localStorage.removeItem("user_id");
+      router.replace("/login");
     }
   };
 

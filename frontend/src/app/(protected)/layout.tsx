@@ -16,23 +16,38 @@ export default function ProtectedLayout({
   useEffect(() => {
     async function refresh() {
       try {
-        const userSessionId = localStorage.getItem("userSessionId");
-        if (!userSessionId) {
+        const refreshToken = localStorage.getItem("refreshToken");
+        if (!refreshToken) {
           router.replace("/login");
+          return;
         }
-        const response = await fetch(`/api/auth/refresh/${userSessionId}`, {
-          method: "GET",
+        const response = await fetch("/api/auth/refresh", {
+          method: "POST",
           headers: {
             "Content-Type": "application/json",
           },
+          body: JSON.stringify({ refreshToken }),
         });
         if (!response.ok) {
+          localStorage.removeItem("refreshToken");
+          localStorage.removeItem("accessToken");
           router.replace("/login");
         } else {
           const data = await response.json();
-          localStorage.setItem("user_id", data?.data?.user?.id);
+          // Update tokens if new ones are provided
+          if (data.data?.refreshToken) {
+            localStorage.setItem("refreshToken", data.data.refreshToken);
+          }
+          if (data.data?.accessToken) {
+            localStorage.setItem("accessToken", data.data.accessToken);
+          }
+          if (data.data?.user?.id) {
+            localStorage.setItem("user_id", data.data.user.id.toString());
+          }
         }
       } catch (e) {
+        localStorage.removeItem("refreshToken");
+        localStorage.removeItem("accessToken");
         router.replace("/login");
         console.error(e);
       }

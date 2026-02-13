@@ -42,7 +42,16 @@ export default function RegisterForm() {
       });
       const result = await response.json();
       if (response.status === 200) {
-        localStorage.setItem("userSessionId", result.userSessionId);
+        // Backend returns refreshToken and accessToken, not userSessionId
+        if (result.data?.refreshToken) {
+          localStorage.setItem("refreshToken", result.data.refreshToken);
+        }
+        if (result.data?.accessToken) {
+          localStorage.setItem("accessToken", result.data.accessToken);
+        }
+        if (result.data?.user?.id) {
+          localStorage.setItem("user_id", result.data.user.id.toString());
+        }
         router.replace("/login");
       } else {
         toast.error(result.message);
