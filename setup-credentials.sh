@@ -1,38 +1,58 @@
 #!/bin/bash
 
 # Скрипт для автоматичного створення .env файлів у всіх папках
-# Використання: ./setup-credentials.sh
+# Використання: 
+#   ./setup-credentials.sh                    # Використовує localhost/127.0.0.1
+#   ./setup-credentials.sh 192.168.1.100      # Використовує переданий IP для всіх сервісів
 # Структура: backend (об'єднаний), frontend, notifications (окремий мікросервіс)
 
 set -e
 
+# Перевірка параметра IP
+SERVICES_IP="${1:-}"
+
 echo "🔐 Створення .env файлів для всіх сервісів..."
+if [ -n "$SERVICES_IP" ]; then
+    echo "📍 Використовується IP для всіх сервісів: $SERVICES_IP"
+else
+    echo "📍 Використовуються локальні адреси (localhost/127.0.0.1)"
+fi
 echo ""
 
 # Базові налаштування (можна змінити через змінні оточення)
-DB_HOST="${DB_HOST:-localhost}"
+# Якщо передано IP як параметр, використовуємо його для всіх HOST
+if [ -n "$SERVICES_IP" ]; then
+    DB_HOST="${DB_HOST:-$SERVICES_IP}"
+    REDIS_HOST="${REDIS_HOST:-$SERVICES_IP}"
+    CLICKHOUSE_HOST="${CLICKHOUSE_HOST:-$SERVICES_IP}"
+    RABBITMQ_HOST="${RABBITMQ_HOST:-$SERVICES_IP}"
+    FRONTEND_URL="${FRONTEND_URL:-http://${SERVICES_IP}:3000}"
+    CLIENT_BASE_URL="${CLIENT_BASE_URL:-http://${SERVICES_IP}:3000}"
+else
+    DB_HOST="${DB_HOST:-localhost}"
+    REDIS_HOST="${REDIS_HOST:-127.0.0.1}"
+    CLICKHOUSE_HOST="${CLICKHOUSE_HOST:-127.0.0.1}"
+    RABBITMQ_HOST="${RABBITMQ_HOST:-localhost}"
+    FRONTEND_URL="${FRONTEND_URL:-http://localhost:3000}"
+    CLIENT_BASE_URL="${CLIENT_BASE_URL:-http://localhost:3000}"
+fi
+
 DB_PORT="${DB_PORT:-5432}"
 DB_USER="${DB_USER:-postgres}"
 DB_PASSWORD="${DB_PASSWORD:-1111}"
 DB_NAME="${DB_NAME:-artsapp}"
 DB_TYPE="${DB_TYPE:-postgres}"
 
-REDIS_HOST="${REDIS_HOST:-127.0.0.1}"
 REDIS_PORT="${REDIS_PORT:-6379}"
 REDIS_PASSWORD="${REDIS_PASSWORD:-1111}"
 
-CLICKHOUSE_HOST="${CLICKHOUSE_HOST:-127.0.0.1}"
 CLICKHOUSE_USER="${CLICKHOUSE_USER:-clickhouse}"
 CLICKHOUSE_PASSWORD="${CLICKHOUSE_PASSWORD:-1111}"
 CLICKHOUSE_DB="${CLICKHOUSE_DB:-clickhouse}"
 
-RABBITMQ_HOST="${RABBITMQ_HOST:-localhost}"
 RABBITMQ_PORT="${RABBITMQ_PORT:-5672}"
 RABBITMQ_USER="${RABBITMQ_USER:-admin}"
 RABBITMQ_PASSWORD="${RABBITMQ_PASSWORD:-1111}"
-
-FRONTEND_URL="${FRONTEND_URL:-http://localhost:3000}"
-CLIENT_BASE_URL="${CLIENT_BASE_URL:-http://localhost:3000}"
 
 # JWT секрети (генеруються автоматично, якщо не встановлені)
 if [ -z "$JWT_ACCESS_SECRET" ]; then
@@ -64,7 +84,13 @@ create_env_file() {
 
 # 1. Frontend .env
 echo "1️⃣  Створення frontend/.env..."
-FRONTEND_ENV="NEXT_PUBLIC_API_URL=http://localhost:${BACKEND_PORT}
+# Формуємо URL для API на основі переданого IP або localhost
+if [ -n "$SERVICES_IP" ]; then
+    API_URL="http://${SERVICES_IP}:${BACKEND_PORT}"
+else
+    API_URL="http://localhost:${BACKEND_PORT}"
+fi
+FRONTEND_ENV="NEXT_PUBLIC_API_URL=${API_URL}
 
 "
 create_env_file "frontend" "$FRONTEND_ENV"
@@ -185,7 +211,19 @@ echo "   export DB_PASSWORD=your_password"
 echo "   export JWT_ACCESS_SECRET=your_secret"
 echo "   ./setup-credentials.sh"
 echo ""
-echo "📌 Нова структура:"
+echo "📋 Або передати IP для всіх сервісів:"
+echo "   ./setup-credentials.sh 192.168.1.100"
+echo ""
+echo "📌 Структура:"
 echo "   - backend: об'єднує auth, chat, events, fetch, posts"
 echo "   - frontend: Next.js додаток"
 echo "   - notifications: окремий мікросервіс для сповіщень"
+echo ""
+if [ -n "$SERVICES_IP" ]; then
+    echo "✅ Всі сервіси налаштовані на IP: $SERVICES_IP"
+    echo "   - PostgreSQL: $DB_HOST:$DB_PORT"
+    echo "   - Redis: $REDIS_HOST:$REDIS_PORT"
+    echo "   - ClickHouse: $CLICKHOUSE_HOST"
+    echo "   - RabbitMQ: $RABBITMQ_HOST:$RABBITMQ_PORT"
+    echo "   - Frontend URL: $FRONTEND_URL"
+fi
