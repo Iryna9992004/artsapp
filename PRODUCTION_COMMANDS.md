@@ -232,7 +232,7 @@ docker exec artsapp-redis-prod redis-cli -a your_password CLIENT LIST
 
 ### Перевірити порти
 ```bash
-netstat -tulpn | grep -E "3000|4000|4001|4002|4003|4004|5432|6379|8123|9000"
+netstat -tulpn | grep -E "3000|4000|4001|4002|4003|4004|5434|6379|8123|9000"
 ```
 
 ## 🚀 Швидкі сценарії

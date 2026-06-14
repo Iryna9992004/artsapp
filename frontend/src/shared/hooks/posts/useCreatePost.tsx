@@ -1,4 +1,5 @@
 import { createPost } from "@/shared/api/services/post.service";
+import { PENDING_KEYS, setPendingItem } from "@/shared/lib/pendingItem";
 import { AxiosError } from "axios";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
@@ -18,14 +19,13 @@ export function useCreatePost(user_id: number | undefined) {
       const response = await createPost(title, description, user_id);
       if (response) {
         toast.success("Post created successfully!");
-        // Mark that we just created a post (for refresh trigger)
-        if (typeof window !== 'undefined') {
-          sessionStorage.setItem('postCreated', Date.now().toString());
-        }
-        // Add delay to allow replication from PostgreSQL to ClickHouse
-        // ClickHouse replication usually takes 1-2 seconds
-        await new Promise(resolve => setTimeout(resolve, 2000));
-        // Navigate to posts without any query params
+        // Оптимістично зберігаємо створений айтем, щоб показати його у списку
+        // одразу, не чекаючи асинхронної реплікації PostgreSQL → ClickHouse.
+        const author_name =
+          typeof window !== "undefined"
+            ? localStorage.getItem("user_name") || ""
+            : "";
+        setPendingItem(PENDING_KEYS.post, { ...response, author_name });
         router.replace("/posts");
       }
     } catch (e) {

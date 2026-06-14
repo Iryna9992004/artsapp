@@ -52,16 +52,18 @@ docker run --name redis -d -p 6379:6379 redis redis-server --requirepass "1111"
 
 # 2. PostgreSQL (з логічною реплікацією!)
 echo "2️⃣  Запуск PostgreSQL з логічною реплікацією..."
-if ! check_port 5432; then
-    echo "❌ Порт 5432 зайнятий. Перевірте, чи не запущений інший PostgreSQL контейнер або процес."
+if ! check_port 5434; then
+    echo "❌ Порт 5434 зайнятий. Перевірте, чи не запущений інший PostgreSQL контейнер або процес."
     echo "   Спробуйте: docker ps | grep postgres"
     exit 1
 fi
+# Хост-порт 5434 (щоб не конфліктувати з локальним PostgreSQL на 5432),
+# всередині контейнера PostgreSQL слухає на стандартному 5432.
 docker run --name postgres \
   -e POSTGRES_USER=postgres \
   -e POSTGRES_PASSWORD=1111 \
   -e POSTGRES_DB=artsapp \
-  -p 5432:5432 -d postgres \
+  -p 5434:5432 -d postgres \
   -c wal_level=logical \
   -c max_replication_slots=10 \
   -c max_wal_senders=10
@@ -147,6 +149,12 @@ fi
 echo "9️⃣  Перевірка таблиць в PostgreSQL..."
 TABLES_COUNT=$(docker exec postgres psql -U postgres -d artsapp -t -c "SELECT count(*) FROM information_schema.tables WHERE table_schema = 'public' AND table_name NOT LIKE 'pg_%';" | tr -d ' ')
 echo "✅ Знайдено таблиць: $TABLES_COUNT"
+if [ "$TABLES_COUNT" = "0" ]; then
+  echo "❌ Помилка: міграції не створили таблиці в PostgreSQL."
+  echo "   ClickHouse не зможе реплікувати неіснуючі таблиці."
+  echo "   Перевірте крок 8️⃣ (npm run migrations:run) та підключення з хоста на localhost:5432."
+  exit 1
+fi
 
 # 10. Створення публікації
 echo "🔟 Створення публікації..."
@@ -170,6 +178,8 @@ sleep 10
 
 # 13. Створення реплікації в ClickHouse
 echo "1️⃣3️⃣  Створення MaterializedPostgreSQL бази в ClickHouse..."
+# ClickHouse ходить до PostgreSQL контейнер-до-контейнера за внутрішнім IP,
+# тому порт ВНУТРІШНІЙ (5432), а не опублікований host-порт 5434.
 docker exec clickhouse clickhouse-client --query "
 SET allow_experimental_database_materialized_postgresql = 1;
 DROP DATABASE IF EXISTS postgres_clickhouse1;

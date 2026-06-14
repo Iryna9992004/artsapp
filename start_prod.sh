@@ -212,7 +212,7 @@ docker exec artsapp-clickhouse-prod clickhouse-client --query "
 SET allow_experimental_database_materialized_postgresql = 1;
 DROP DATABASE IF EXISTS artsapp_sync;
 CREATE DATABASE artsapp_sync
-ENGINE = MaterializedPostgreSQL('$PG_IP:5432', 'artsapp', 'postgres', '${PG_PASSWORD:-1111}')
+ENGINE = MaterializedPostgreSQL('$PG_IP:5434', 'artsapp', 'postgres', '${PG_PASSWORD:-1111}')
 SETTINGS 
     materialized_postgresql_schema = 'public',
     materialized_postgresql_tables_list = 'users,topics,messages,topic_reads,message_reads,events,posts';" 2>&1 || true
@@ -244,7 +244,7 @@ echo -e "   ${GREEN}Fetch Service:${NC} http://localhost:4003"
 echo -e "   ${GREEN}Posts Service:${NC} http://localhost:4004"
 echo ""
 echo -e "${BLUE}🗄️  Бази даних:${NC}"
-echo -e "   ${GREEN}PostgreSQL:${NC}    localhost:5432 (user: postgres, db: artsapp)"
+echo -e "   ${GREEN}PostgreSQL:${NC}    localhost:5434 (user: postgres, db: artsapp)"
 echo -e "   ${GREEN}Redis:${NC}         localhost:6379"
 echo -e "   ${GREEN}ClickHouse:${NC}    localhost:8123 (HTTP), localhost:9000 (Native)"
 echo ""

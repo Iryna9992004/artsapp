@@ -17,7 +17,7 @@ docker run --name postgres \
   -e POSTGRES_USER=postgres \
   -e POSTGRES_PASSWORD=1111 \
   -e POSTGRES_DB=artsapp \
-  -p 5432:5432 -d postgres \
+  -p 5434:5434 -d postgres \
   -c wal_level=logical \              # ← КЛЮЧОВИЙ ПАРАМЕТР
   -c max_replication_slots=10 \       # ← Для слотів реплікації
   -c max_wal_senders=10              # ← Для відправки WAL логів
@@ -46,7 +46,7 @@ CREATE PUBLICATION clickhouse_publication FOR ALL TABLES;
 **MaterializedPostgreSQL база:**
 ```sql
 CREATE DATABASE artsapp_sync
-ENGINE = MaterializedPostgreSQL('172.17.0.3:5432', 'artsapp', 'postgres', '1111')
+ENGINE = MaterializedPostgreSQL('172.17.0.3:5434', 'artsapp', 'postgres', '1111')
 SETTINGS 
     materialized_postgresql_schema = 'public',
     materialized_postgresql_tables_list = 'users,topics,messages,topic_reads,message_reads';
@@ -63,7 +63,7 @@ SETTINGS
 
 ### Контейнери:
 ```
-✅ postgres  (172.17.0.3:5432)  - PostgreSQL 17
+✅ postgres  (172.17.0.3:5434)  - PostgreSQL 17
 ✅ clickhouse (9000, 8123)      - ClickHouse 25.12.1
 ✅ redis     (6379)             - Redis latest
 ```
@@ -101,7 +101,7 @@ PostgreSQL → ClickHouse: ✓ Підключено
                      ↓
 ┌─────────────────────────────────────────────────────────────┐
 │  4. ClickHouse MaterializedPostgreSQL отримує зміни         │
-│     Через TCP підключення (172.17.0.3:5432)                 │
+│     Через TCP підключення (172.17.0.3:5434)                 │
 └────────────────────┬────────────────────────────────────────┘
                      ↓
 ┌─────────────────────────────────────────────────────────────┐
@@ -177,7 +177,7 @@ SELECT * FROM system.databases WHERE name = 'artsapp_sync';"
 
 **Параметри:**
 - engine = `MaterializedPostgreSQL`
-- Підключення = `172.17.0.3:5432`
+- Підключення = `172.17.0.3:5434`
 
 ---
 

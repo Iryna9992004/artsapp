@@ -49,6 +49,9 @@ export default function LoginForm() {
         if (result.data?.user?.id) {
           localStorage.setItem("user_id", result.data.user.id.toString());
         }
+        if (result.data?.user?.full_name) {
+          localStorage.setItem("user_name", result.data.user.full_name);
+        }
         router.replace("/feed");
       } else {
         toast.error(result.message);

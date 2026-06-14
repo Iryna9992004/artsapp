@@ -3,7 +3,7 @@
 ## Перевірка перед налаштуванням
 
 - [ ] Docker встановлений і запущений
-- [ ] Порти 5432, 6379, 8123, 9000 вільні
+- [ ] Порти 5434, 6379, 8123, 9000 вільні
 - [ ] Node.js встановлений (для міграцій)
 
 ## Крок 1: Запуск контейнерів ✅
@@ -17,7 +17,7 @@ docker run --name postgres \
   -e POSTGRES_USER=postgres \
   -e POSTGRES_PASSWORD=1111 \
   -e POSTGRES_DB=artsapp \
-  -p 5432:5432 -d postgres \
+  -p 5434:5434 -d postgres \
   -c wal_level=logical \
   -c max_replication_slots=10 \
   -c max_wal_senders=10
@@ -103,7 +103,7 @@ SET allow_experimental_database_materialized_postgresql = 1;
 DROP DATABASE IF EXISTS postgres_clickhouse1;
 DROP DATABASE IF EXISTS postgres_clickhouse11;
 CREATE DATABASE artsapp_sync
-ENGINE = MaterializedPostgreSQL('172.17.0.3:5432', 'artsapp', 'postgres', '1111')
+ENGINE = MaterializedPostgreSQL('172.17.0.3:5434', 'artsapp', 'postgres', '1111')
 SETTINGS 
     materialized_postgresql_schema = 'public',
     materialized_postgresql_tables_list = 'users,topics,messages,topic_reads,message_reads';"
@@ -193,7 +193,7 @@ FORMAT PrettyCompact;"
 
 **Конфігурація:**
 - PostgreSQL IP: `__________________`
-- PostgreSQL Port: `5432`
+- PostgreSQL Port: `5434`
 - ClickHouse Ports: `8123` (HTTP), `9000` (Native)
 - База даних: `artsapp`
 - Реплікована база: `artsapp_sync`

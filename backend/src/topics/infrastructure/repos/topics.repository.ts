@@ -14,15 +14,29 @@ export class TopicRepositoryClickhouse implements TopicRepository {
         throw new Error('DB_NAME is not configured. Please set DB_NAME environment variable.');
       }
 
-      let query = `
-      SELECT 
+      const params: Record<string, any> = {
+        limit,
+        offset,
+      };
+
+      // Фільтр (нечутливий до регістру через ILIKE) винесено в підзапит ДО JOIN:
+      // движок MaterializedPostgreSQL (_sign) + JOIN падає з
+      // NOT_FOUND_COLUMN_IN_BLOCK, зокрема коли результат порожній.
+      let topicsFilter = '';
+      if (text && text.trim().length > 0) {
+        topicsFilter = ` WHERE text ILIKE {searchPattern:String}`;
+        params.searchPattern = `%${text.trim()}%`;
+      }
+
+      const query = `
+      SELECT
         t.id AS id,
         t.text AS text,
         t.created_at AS created_at,
         t.user_id AS user_id,
         u.full_name AS author_name,
-        ifNull(r.reads_count, 0) AS reads_count 
-      FROM ${config.db.name}.topics t
+        ifNull(r.reads_count, 0) AS reads_count
+      FROM (SELECT * FROM ${config.db.name}.topics${topicsFilter}) t
       LEFT JOIN ${config.db.name}.users u ON u.id = t.user_id
       LEFT JOIN (
         SELECT
@@ -31,19 +45,7 @@ export class TopicRepositoryClickhouse implements TopicRepository {
         FROM ${config.db.name}.topic_reads
         GROUP BY topic_id
       ) r ON r.topic_id = t.id
-    `;
-
-      const params: Record<string, any> = {
-        limit,
-        offset,
-      };
-
-      if (text && text.trim().length > 0) {
-        query += ` WHERE t.text LIKE {searchPattern:String}`;
-        params.searchPattern = `%${text.trim()}%`;
-      }
-
-      query += ` ORDER BY t.id LIMIT {limit:UInt32} OFFSET {offset:UInt32}`;
+      ORDER BY t.id DESC LIMIT {limit:UInt32} OFFSET {offset:UInt32}`;
 
       const rows = await this.clickhouseService.getConfig().query({
         query,
@@ -70,9 +72,10 @@ export class TopicRepositoryClickhouse implements TopicRepository {
       const rows = await this.clickhouseService.getConfig().query({
         query: `SELECT *
               FROM ${config.db.name}.topics
-              WHERE id = ${topic_id}
+              WHERE id = {topicId:UInt32}
               ORDER BY id`,
         format: 'JSONEachRow',
+        query_params: { topicId: Number(topic_id) },
       });
       const topic = await rows.json<Topic>();
       return topic[0];

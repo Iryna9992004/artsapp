@@ -1,18 +1,59 @@
 "use client";
 import Post from "@/components/entities/post";
 import { useFetchPosts } from "@/shared/hooks/posts/useFetchPosts";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { PostsListProps } from "./types";
 import { useOnInView } from "react-intersection-observer";
 import Loader from "@/components/ui/loader";
+import { usePendingItem } from "@/shared/hooks/usePendingItem";
+import { PENDING_KEYS } from "@/shared/lib/pendingItem";
+
+interface PostItem {
+  id: number;
+  title: string;
+  post_description: string;
+  created_at: string;
+  author_name: string;
+  user_id: number;
+}
 
 export default function PostsList({ searchText }: PostsListProps) {
   const [lastIndex, setLastIndex] = useState(0);
-  const { posts, isLoading, hasMore } = useFetchPosts(
+  const { posts, isLoading, hasMore, fetch } = useFetchPosts(
     lastIndex,
     10,
     searchText
   );
+
+  // Оптимістично доданий пост (щойно створений), поки триває реплікація.
+  const { item: pending, clear: clearPending } = usePendingItem<PostItem>(
+    PENDING_KEYS.post
+  );
+  const reconcileTries = React.useRef(0);
+
+  const displayedPosts = useMemo(() => {
+    if (!pending || searchText) return posts as PostItem[];
+    if (posts.some((p: PostItem) => p.id === pending.id))
+      return posts as PostItem[];
+    return [pending, ...(posts as PostItem[])];
+  }, [posts, pending, searchText]);
+
+  useEffect(() => {
+    if (!pending) {
+      reconcileTries.current = 0;
+      return;
+    }
+    if (posts.some((p: PostItem) => p.id === pending.id)) {
+      clearPending();
+      return;
+    }
+    if (reconcileTries.current >= 5) return;
+    const timer = setTimeout(() => {
+      reconcileTries.current += 1;
+      fetch();
+    }, 2000);
+    return () => clearTimeout(timer);
+  }, [pending, posts, fetch, clearPending]);
 
   const trackingRef = useOnInView(
     (inView) => {
@@ -30,7 +71,7 @@ export default function PostsList({ searchText }: PostsListProps) {
     setLastIndex(0);
   }, [searchText]);
 
-  if (isLoading && posts.length === 0) {
+  if (isLoading && displayedPosts.length === 0) {
     return (
       <div className="flex items-center justify-center min-h-[400px]">
         <Loader size="lg" />
@@ -66,14 +107,14 @@ export default function PostsList({ searchText }: PostsListProps) {
 
   return (
     <div className="flex flex-col w-full px-6 gap-6 pb-10">
-      {posts.length === 0 && !isLoading && (
+      {displayedPosts.length === 0 && !isLoading && (
         <div className="flex flex-col items-center justify-center min-h-[400px] gap-4">
           <div className="text-6xl">🎵</div>
           <p className="text-xl text-gray-400">No posts yet</p>
           <p className="text-sm text-gray-500">Be the first to share your thoughts!</p>
         </div>
       )}
-      {posts.map((item, index) => (
+      {displayedPosts.map((item, index) => (
         <div
           key={`post-${item.id}-${index}`}
           className="animate-fade-in"
@@ -88,7 +129,7 @@ export default function PostsList({ searchText }: PostsListProps) {
           />
         </div>
       ))}
-      {isLoading && posts.length > 0 && (
+      {isLoading && displayedPosts.length > 0 && (
         <div className="flex items-center justify-center py-8">
           <Loader />
         </div>

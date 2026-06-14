@@ -42,7 +42,7 @@ DROP DATABASE IF EXISTS postgres_clickhouse11;
 DROP DATABASE IF EXISTS artsapp_sync;
 
 CREATE DATABASE artsapp_sync
-ENGINE = MaterializedPostgreSQL('postgres:5432', 'artsapp', 'postgres', '1111')
+ENGINE = MaterializedPostgreSQL('postgres:5434', 'artsapp', 'postgres', '1111')
 SETTINGS 
     materialized_postgresql_schema = 'public',
     materialized_postgresql_tables_list = 'users,topics,messages,topic_reads,message_reads';

@@ -13,32 +13,39 @@ export class EventsRepositoryCLickhouse implements EventRepository {
     offset: number,
     text?: string,
   ): Promise<EventEntity[]> {
-    if (text && text.length > 0) {
-      const rows = await this.clickhouseService.getConfig().query({
-        query: `SELECT t.*,
-              u.full_name AS author_name
-              FROM ${config.db.name}.events t
-              LEFT JOIN ${config.db.name}.users u ON u.id = t.user_id
-              WHERE t.title LIKE '${text}%' OR t.event_description LIKE '${text}%'
-              ORDER BY t.id 
-              LIMIT ${limit} 
-              OFFSET ${offset}`,
-        format: 'JSONEachRow',
-      });
+    const hasText = !!(text && text.length > 0);
 
-      const events = await rows.json<EventEntity>();
-      return events;
+    // Фільтрація винесена в підзапит ДО JOIN: інакше движок
+    // MaterializedPostgreSQL (віртуальна колонка _sign) + LEFT JOIN + OR-умова
+    // падає з NOT_FOUND_COLUMN_IN_BLOCK.
+    const query = `SELECT t.*,
+              u.full_name AS author_name
+              FROM (
+                SELECT *
+                FROM ${config.db.name}.events
+                ${
+                  hasText
+                    ? `WHERE title ILIKE {searchPattern:String} OR event_description ILIKE {searchPattern:String}`
+                    : ''
+                }
+              ) t
+              LEFT JOIN ${config.db.name}.users u ON u.id = t.user_id
+              ORDER BY t.id DESC
+              LIMIT {limit:UInt32}
+              OFFSET {offset:UInt32}`;
+
+    const query_params: Record<string, unknown> = {
+      limit: Number(limit),
+      offset: Number(offset),
+    };
+    if (hasText) {
+      query_params.searchPattern = `${text}%`;
     }
 
     const rows = await this.clickhouseService.getConfig().query({
-      query: `SELECT t.*,
-              u.full_name AS author_name
-              FROM ${config.db.name}.events t
-              LEFT JOIN ${config.db.name}.users u ON u.id = t.user_id
-              ORDER BY t.id 
-              LIMIT ${limit} 
-              OFFSET ${offset}`,
+      query,
       format: 'JSONEachRow',
+      query_params,
     });
 
     const events = await rows.json<EventEntity>();

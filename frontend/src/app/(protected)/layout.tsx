@@ -44,6 +44,9 @@ export default function ProtectedLayout({
           if (data.data?.user?.id) {
             localStorage.setItem("user_id", data.data.user.id.toString());
           }
+          if (data.data?.user?.full_name) {
+            localStorage.setItem("user_name", data.data.user.full_name);
+          }
         }
       } catch (e) {
         localStorage.removeItem("refreshToken");

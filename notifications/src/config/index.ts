@@ -47,7 +47,7 @@ const config: Config = {
     user: process.env.PG_USER || '',
     password: process.env.PG_PASSWORD || '',
     host: process.env.PG_HOST || '',
-    port: Number(process.env.PG_PORT) || 5432,
+    port: Number(process.env.PG_PORT) || 5434,
     type: process.env.DB_TYPE || '',
   },
   rabbitmq: {

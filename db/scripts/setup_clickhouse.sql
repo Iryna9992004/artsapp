@@ -9,7 +9,7 @@
 -- Приклад виводу: 172.17.0.3
 --
 -- Або якщо обидва контейнери в одній Docker Compose мережі, використовуйте ім'я контейнера:
---   'postgres:5432' замість '172.17.0.3:5432'
+--   'postgres:5434' замість '172.17.0.3:5434'
 
 -- Enable experimental feature
 SET allow_experimental_database_materialized_postgresql = 1;

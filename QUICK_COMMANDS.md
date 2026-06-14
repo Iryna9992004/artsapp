@@ -22,7 +22,7 @@ docker run --name postgres \
   -e POSTGRES_USER=postgres \
   -e POSTGRES_PASSWORD=1111 \
   -e POSTGRES_DB=artsapp \
-  -p 5432:5432 -d postgres \
+  -p 5434:5434 -d postgres \
   -c wal_level=logical \
   -c max_replication_slots=10 \
   -c max_wal_senders=10
@@ -102,7 +102,7 @@ docker exec clickhouse clickhouse-client --query "
 SET allow_experimental_database_materialized_postgresql = 1;
 DROP DATABASE IF EXISTS artsapp_sync;
 CREATE DATABASE artsapp_sync
-ENGINE = MaterializedPostgreSQL('$PG_IP:5432', 'artsapp', 'postgres', '1111')
+ENGINE = MaterializedPostgreSQL('$PG_IP:5434', 'artsapp', 'postgres', '1111')
 SETTINGS
     materialized_postgresql_schema = 'public',
     materialized_postgresql_tables_list = 'users,topics,messages,topic_reads,message_reads';" 2>&1
@@ -168,7 +168,7 @@ chmod +x setup.sh && ./setup.sh
 # 1. Запуск контейнерів
 docker rm -f postgres clickhouse redis 2>/dev/null || true
 docker run --name redis -d -p 6379:6379 redis redis-server --requirepass "1111"
-docker run --name postgres -e POSTGRES_USER=postgres -e POSTGRES_PASSWORD=1111 -e POSTGRES_DB=artsapp -p 5432:5432 -d postgres -c wal_level=logical -c max_replication_slots=10 -c max_wal_senders=10
+docker run --name postgres -e POSTGRES_USER=postgres -e POSTGRES_PASSWORD=1111 -e POSTGRES_DB=artsapp -p 5434:5434 -d postgres -c wal_level=logical -c max_replication_slots=10 -c max_wal_senders=10
 docker run --name clickhouse -d -e CLICKHOUSE_DB=clickhouse -e CLICKHOUSE_USER=clickhouse -e CLICKHOUSE_DEFAULT_ACCESS_MANAGEMENT=1 -e CLICKHOUSE_PASSWORD=1111 -p 8123:8123 -p 9000:9000 clickhouse/clickhouse-server
 
 # 2. Очікування готовності (30 секунд)
@@ -182,7 +182,7 @@ docker exec postgres psql -U postgres -d artsapp -c "CREATE PUBLICATION IF NOT E
 
 # 5. Отримання IP та створення реплікації
 PG_IP=$(docker inspect postgres -f '{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}')
-docker exec clickhouse clickhouse-client --query "SET allow_experimental_database_materialized_postgresql = 1; DROP DATABASE IF EXISTS artsapp_sync; CREATE DATABASE artsapp_sync ENGINE = MaterializedPostgreSQL('$PG_IP:5432', 'artsapp', 'postgres', '1111') SETTINGS materialized_postgresql_schema = 'public', materialized_postgresql_tables_list = 'users,topics,messages,topic_reads,message_reads';"
+docker exec clickhouse clickhouse-client --query "SET allow_experimental_database_materialized_postgresql = 1; DROP DATABASE IF EXISTS artsapp_sync; CREATE DATABASE artsapp_sync ENGINE = MaterializedPostgreSQL('$PG_IP:5434', 'artsapp', 'postgres', '1111') SETTINGS materialized_postgresql_schema = 'public', materialized_postgresql_tables_list = 'users,topics,messages,topic_reads,message_reads';"
 
 # 6. Перевірка (через 10 секунд)
 sleep 10
@@ -200,7 +200,7 @@ docker run --name postgres \
   -e POSTGRES_USER=postgres \
   -e POSTGRES_PASSWORD=1111 \
   -e POSTGRES_DB=artsapp \
-  -p 5432:5432 -d postgres \
+  -p 5434:5434 -d postgres \
   -c wal_level=logical \
   -c max_replication_slots=10 \
   -c max_wal_senders=10

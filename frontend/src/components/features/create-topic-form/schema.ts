@@ -4,5 +4,6 @@ export const createTopicFormvalidationSchema = z.object({
   topic: z
     .string()
     .min(5, "Topic is required")
-    .min(10, "Topic must be at least 10 characters"),
+    .min(10, "Topic must be at least 10 characters")
+    .max(2000, "Topic must be at most 2000 characters"),
 });

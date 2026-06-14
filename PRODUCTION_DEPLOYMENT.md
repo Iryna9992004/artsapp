@@ -78,7 +78,7 @@ FRONTEND_URL=http://your-domain.com
 - **Posts Service**: http://localhost:4004
 
 #### 🗄️ Бази даних:
-- **PostgreSQL**: localhost:5432 (user: postgres, db: artsapp)
+- **PostgreSQL**: localhost:5434 (user: postgres, db: artsapp)
 - **Redis**: localhost:6379
 - **ClickHouse**: localhost:8123 (HTTP), localhost:9000 (Native)
 

@@ -49,7 +49,7 @@
 | **Events Service** | http://localhost:4002 | Управління подіями |
 | **Fetch Service** | http://localhost:4003 | Отримання даних |
 | **Posts Service** | http://localhost:4004 | Управління публікаціями |
-| **PostgreSQL** | localhost:5432 | База даних |
+| **PostgreSQL** | localhost:5434 | База даних |
 | **Redis** | localhost:6379 | Кеш та черги |
 | **ClickHouse** | localhost:8123 / 9000 | Аналітична БД |
 

@@ -37,7 +37,7 @@ else
     CLIENT_BASE_URL="${CLIENT_BASE_URL:-http://localhost:3000}"
 fi
 
-DB_PORT="${DB_PORT:-5432}"
+DB_PORT="${DB_PORT:-5434}"
 DB_USER="${DB_USER:-postgres}"
 DB_PASSWORD="${DB_PASSWORD:-1111}"
 DB_NAME="${DB_NAME:-artsapp}"

@@ -1,15 +1,58 @@
 "use client";
 import FeedMessage from "@/components/entities/feed-message";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { TopicsListProps } from "./types";
 import { useOnInView } from "react-intersection-observer";
 import { useTopics } from "@/shared/hooks/topic/useTopics";
 import Loader from "@/components/ui/loader";
+import { usePendingItem } from "@/shared/hooks/usePendingItem";
+import { PENDING_KEYS } from "@/shared/lib/pendingItem";
+
+interface TopicItem {
+  id: number;
+  text: string;
+  author_name: string;
+  created_at: string;
+}
 
 export default function TopicsList({ searchText }: TopicsListProps) {
   const [lastIndex, setLastIndex] = useState(0);
-  const { isLoading, topics, hasMore } = useTopics(lastIndex, 10, searchText);
+  const { isLoading, topics, hasMore, fetch } = useTopics(
+    lastIndex,
+    10,
+    searchText
+  );
   const isLoadingRef = React.useRef(false);
+
+  // Оптимістично додана тема (щойно створена), поки триває реплікація.
+  const { item: pending, clear: clearPending } = usePendingItem<TopicItem>(
+    PENDING_KEYS.topic
+  );
+  const reconcileTries = React.useRef(0);
+
+  const displayedTopics = useMemo(() => {
+    if (!pending || searchText) return topics as TopicItem[];
+    if (topics.some((t: TopicItem) => t.id === pending.id))
+      return topics as TopicItem[];
+    return [pending, ...(topics as TopicItem[])];
+  }, [topics, pending, searchText]);
+
+  useEffect(() => {
+    if (!pending) {
+      reconcileTries.current = 0;
+      return;
+    }
+    if (topics.some((t: TopicItem) => t.id === pending.id)) {
+      clearPending();
+      return;
+    }
+    if (reconcileTries.current >= 5) return;
+    const timer = setTimeout(() => {
+      reconcileTries.current += 1;
+      fetch();
+    }, 2000);
+    return () => clearTimeout(timer);
+  }, [pending, topics, fetch, clearPending]);
   const lastIncrementRef = React.useRef<number>(0);
 
   // Update ref when isLoading changes
@@ -44,7 +87,7 @@ export default function TopicsList({ searchText }: TopicsListProps) {
     lastIncrementRef.current = 0;
   }, [searchText]);
 
-  if (isLoading && topics.length === 0) {
+  if (isLoading && displayedTopics.length === 0) {
     return (
       <div className="flex items-center justify-center min-h-[400px]">
         <Loader size="lg" />
@@ -54,14 +97,14 @@ export default function TopicsList({ searchText }: TopicsListProps) {
 
   return (
     <div className="px-6">
-      {topics.length === 0 && !isLoading && (
+      {displayedTopics.length === 0 && !isLoading && (
         <div className="flex flex-col items-center justify-center min-h-[400px] gap-4">
           <div className="text-6xl">💬</div>
           <p className="text-xl text-gray-400">No topics yet</p>
           <p className="text-sm text-gray-500">Start a conversation!</p>
         </div>
       )}
-      {topics.map((item, index) => (
+      {displayedTopics.map((item, index) => (
         <div
           key={`topic-${item.id}-${index}`}
           className="animate-fade-in"
@@ -76,7 +119,7 @@ export default function TopicsList({ searchText }: TopicsListProps) {
         />
         </div>
       ))}
-      {isLoading && topics.length > 0 && (
+      {isLoading && displayedTopics.length > 0 && (
         <div className="flex items-center justify-center py-8">
           <Loader />
         </div>

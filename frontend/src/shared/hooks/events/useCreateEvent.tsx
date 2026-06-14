@@ -1,4 +1,5 @@
 import { createEvent } from "@/shared/api/services/event.service";
+import { PENDING_KEYS, setPendingItem } from "@/shared/lib/pendingItem";
 import { AxiosError } from "axios";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
@@ -18,15 +19,14 @@ export function useCreateEvent(user_id: number | undefined) {
       const response = await createEvent(title, description, user_id);
       if (response) {
         toast.success("Event created successfully!");
-        // Mark that we just created an event (for refresh trigger)
-        if (typeof window !== 'undefined') {
-          sessionStorage.setItem('eventCreated', Date.now().toString());
-        }
-        // Add delay to allow replication from PostgreSQL to ClickHouse
-        // ClickHouse replication usually takes 1-2 seconds
-        await new Promise(resolve => setTimeout(resolve, 2000));
-        // Navigate to events without any query params
-        router.replace('/events');
+        // Оптимістично зберігаємо створений айтем, щоб показати його у списку
+        // одразу, не чекаючи асинхронної реплікації PostgreSQL → ClickHouse.
+        const author_name =
+          typeof window !== "undefined"
+            ? localStorage.getItem("user_name") || ""
+            : "";
+        setPendingItem(PENDING_KEYS.event, { ...response, author_name });
+        router.replace("/events");
       }
     } catch (e) {
       if (e instanceof AxiosError) {

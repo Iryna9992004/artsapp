@@ -22,7 +22,7 @@ services:
       - -c
       - max_wal_senders=10
     ports:
-      - "5432:5432"
+      - "5434:5434"
     volumes:
       - postgres_data:/var/lib/postgresql/data
     networks:
@@ -107,7 +107,7 @@ services:
       NODE_ENV: production
       PORT: ${BACKEND_PORT:-4000}
       PG_HOST: postgres
-      PG_PORT: 5432
+      PG_PORT: 5434
       PG_USER: postgres
       PG_PASSWORD: ${PG_PASSWORD:-1111}
       PG_NAME: artsapp
@@ -154,7 +154,7 @@ services:
       NODE_ENV: production
       PORT: ${NOTIFICATIONS_PORT:-4005}
       PG_HOST: postgres
-      PG_PORT: 5432
+      PG_PORT: 5434
       PG_USER: postgres
       PG_PASSWORD: ${PG_PASSWORD:-1111}
       PG_NAME: artsapp
